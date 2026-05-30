@@ -49,7 +49,7 @@
     }, { once: true });
   }
 
-  function initYouTube(){ els('.youtube-player').forEach(function(d){ if(!d.dataset.id) return makeYouTube(d) }) }
+  function initYouTube(){ els('.youtube-player').forEach(function(d){ if(d.dataset.id) makeYouTube(d) }) }
 
   // Keep open accordion heights on resize
   window.addEventListener('resize', function(){ els('.accordion-content.open').forEach(function(c){ c.style.maxHeight = c.scrollHeight + 'px'; }) });
