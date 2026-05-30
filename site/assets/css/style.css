@@ -1,33 +1,45 @@
-:root{--bg:#ffffff;--text:#0b0b0b;--muted:#6b6b6b;--accent:#0b6ef6}
+:root{--bg:#000000;--text:#eaeaea;--muted:#9a9a9a;--accent:#0ea5ff;--card:#070707;--glass:rgba(255,255,255,0.02)}
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;color:var(--text);background:var(--bg);line-height:1.5}
+body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;color:var(--text);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 .container{max-width:980px;margin:0 auto;padding:1rem}
-.site-header{background:#f7f7f7;border-bottom:1px solid #e6e6e6;position:sticky;top:0;z-index:50}
+.site-header{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));border-bottom:1px solid rgba(255,255,255,0.04);position:sticky;top:0;z-index:50;backdrop-filter:blur(6px)}
 .header-inner{display:flex;align-items:center;gap:1rem;padding:0.6rem 1rem}
 .brand{display:flex;align-items:center;gap:0.6rem;text-decoration:none;color:inherit}
-.logo{width:46px;height:46px;object-fit:contain}
-.name{font-weight:600}
-.main-nav{margin-left:auto;display:flex;gap:1rem}
-.main-nav a{color:var(--text);text-decoration:none;padding:6px 8px;border-radius:6px}
-.main-nav a:hover{background:#eaeaea}
-.search input{padding:8px 10px;border-radius:8px;border:1px solid #ddd}
-.intro{padding:2rem 0}
-article h1,article h2,article h3{margin:1rem 0 0.4rem}
+.logo{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5))}
+.name{font-weight:600;color:var(--text)}
+.nav-toggle{background:transparent;border:0;color:var(--text);font-size:20px;padding:6px;border-radius:6px;display:none;cursor:pointer}
+.main-nav{margin-left:auto;display:flex;gap:0.75rem;align-items:center}
+.main-nav a{color:var(--text);text-decoration:none;padding:8px 10px;border-radius:8px;transition:transform .18s ease, background .18s ease, color .18s ease}
+.main-nav a:hover{background:rgba(255,255,255,0.03);transform:translateY(-2px)}
+.search input{padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);width:180px;transition:width .18s ease}
+.search input:focus{outline:none;box-shadow:0 6px 30px rgba(14,165,255,0.06);width:260px}
+.intro{padding:2rem 0;color:var(--text)}
+article h1,article h2,article h3{margin:1rem 0 0.4rem;color:var(--text)}
 figure{margin:1rem 0}
 figure img{max-width:100%;height:auto;border-radius:6px}
 .hero img{width:100%;height:auto;border-radius:8px}
 .video-entry{display:flex;flex-wrap:wrap;gap:1rem;margin:0.6rem 0}
-.youtube-player{position:relative;cursor:pointer;max-width:560px;width:100%;background:#000;border-radius:6px;overflow:hidden}
-.youtube-player img{width:100%;display:block}
-.youtube-player .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 14px;background:var(--accent);color:#fff;border-radius:999px;border:0}
-.accordion{margin:1.2rem 0;border:1px solid #e6e6e6;border-radius:8px;overflow:hidden}
-.accordion-toggle{background:#111;color:#fff;border:none;width:100%;text-align:left;padding:1rem;font-size:1.05rem}
-.accordion-content{max-height:0;overflow:hidden;transition:max-height 0.28s ease;padding:0 1rem}
-.accordion-content.open{padding:1rem}
-.section-hero{padding:1rem;border-radius:6px;color:#fff;background-size:cover;background-position:center;margin-bottom:1rem;min-height:120px;display:flex;flex-direction:column;justify-content:center}
+.youtube-player{position:relative;cursor:pointer;max-width:560px;width:100%;background:#020202;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+.youtube-player img{width:100%;display:block;filter:brightness(0.95)}
+.youtube-player .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 14px;background:var(--accent);color:#012;border-radius:999px;border:0;font-weight:700}
+.accordion{margin:1.2rem 0;border:1px solid rgba(255,255,255,0.04);border-radius:8px;overflow:hidden;background:var(--card)}
+.accordion-toggle{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:var(--text);border:none;width:100%;text-align:left;padding:1rem;font-size:1.05rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.accordion-toggle:after{content:'+';font-weight:700}
+.accordion-toggle[aria-expanded="true"]:after{content:'−'}
+.accordion-content{max-height:0;overflow:hidden;opacity:0;transform:translateY(-6px);transition:max-height .34s ease,opacity .26s ease,transform .26s ease;padding:0 1rem}
+.accordion-content.open{max-height:2400px;opacity:1;transform:translateY(0);padding:1rem}
+.section-hero{padding:1rem;border-radius:6px;color:#fff;background-size:cover;background-position:center;margin-bottom:1rem;min-height:120px;display:flex;flex-direction:column;justify-content:center;box-shadow:inset 0 -40px 60px rgba(0,0,0,0.35)}
 .small-italic{font-style:italic;color:var(--muted)}
 .search-results{margin-top:1rem}
-.result-item{padding:0.6rem;border-bottom:1px solid #eee}
-.site-footer{border-top:1px solid #eee;padding:1rem 0;margin-top:2rem}
+.result-item{padding:0.6rem;border-bottom:1px solid rgba(255,255,255,0.03)}
+.site-footer{border-top:1px solid rgba(255,255,255,0.03);padding:1rem 0;margin-top:2rem;color:var(--muted)}
 
-@media(min-width:720px){.header-inner{padding:0.8rem 1rem}.main-nav a{padding:8px 10px}}
+@media(max-width:720px){.nav-toggle{display:inline-flex;margin-left:auto}.main-nav{position:absolute;right:1rem;top:64px;background:#050505;flex-direction:column;padding:0.6rem;border-radius:8px;display:none;width:calc(100% - 2rem);max-width:320px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}.main-nav.open{display:flex}.search input{width:120px}.container{padding:0.8rem}}
+
+@media(min-width:720px){.header-inner{padding:0.8rem 1rem}.main-nav a{padding:8px 10px}.search input{width:200px}}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+@media(prefers-reduced-motion:no-preference){body{animation:siteFadeIn .38s ease both}@keyframes siteFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
