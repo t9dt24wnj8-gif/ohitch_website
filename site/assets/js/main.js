@@ -20,10 +20,38 @@
   // YouTube lazy players (create iframe only on click)
   function makeYouTube(div){ try{ var id = div.dataset.id; if(!id) return; var thumb = 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg'; var img = document.createElement('img'); img.src = thumb; img.alt = div.dataset.title || 'YouTube thumbnail'; div.appendChild(img); var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video'); btn.type = 'button'; div.appendChild(btn); div.addEventListener('click', function(){ var iframe = document.createElement('iframe'); iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'); iframe.setAttribute('allowfullscreen',''); iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1'; iframe.style.width = '100%'; var width = div.clientWidth || 560; iframe.style.height = Math.round(width * 9 / 16) + 'px'; iframe.style.border = '0'; iframe.style.boxShadow = 'none'; while(div.firstChild) div.removeChild(div.firstChild); div.appendChild(iframe); }, { once: true }); }catch(e){ console.error(e); } }
 
+  function makeYouTube(div){
+    try{
+      var id = div.dataset.id; if(!id) return;
+      var thumb = 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg';
+      // img and button are absolutely positioned by CSS so removing them won't cause layout jump
+      var img = document.createElement('img'); img.src = thumb; img.alt = div.dataset.title || 'YouTube thumbnail';
+      var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video'); btn.type = 'button';
+      // add simple inline SVG triangle (accessible-hidden)
+      btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#fff" d="M8 5v14l11-7z"/></svg>';
+      div.appendChild(img);
+      div.appendChild(btn);
+      div.addEventListener('click', function(){
+        var iframe = document.createElement('iframe');
+        iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        iframe.setAttribute('allowfullscreen','');
+        iframe.setAttribute('loading','lazy');
+        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1';
+        iframe.style.border = '0'; iframe.style.boxShadow = 'none';
+        while(div.firstChild) div.removeChild(div.firstChild);
+        div.appendChild(iframe);
+      }, { once: true });
+    }catch(e){ console.error(e); }
+  }
+
   function initYouTube(){ els('.youtube-player').forEach(function(d){ if(d && d.dataset && d.dataset.id) makeYouTube(d); }); }
 
-  // Open links in new tab and add rel for security
-  function initLinkTargets(){ els('a').forEach(function(a){ if(!a.getAttribute('target')) a.setAttribute('target','_blank'); a.setAttribute('rel','noopener noreferrer'); }); }
+  // Open external links in new tab and add rel for security; keep internal links as-is
+  function initLinkTargets(){ els('a').forEach(function(a){ try{ if(a.hasAttribute('target')) return; var href = a.getAttribute('href'); if(!href) return; // skip anchors and javascript: mailto: etc
+        var url = new URL(href, location.href);
+        if(url.protocol && (url.protocol === 'http:' || url.protocol === 'https:') && url.origin !== location.origin){ a.setAttribute('target','_blank'); a.setAttribute('rel','noopener noreferrer'); }
+      }catch(e){ /* ignore malformed or non-http URLs */ }
+    }); }
 
   function onReady(){ setHeaderHeightVar(); initNavToggle(); initAccordions(); initYouTube(); initLinkTargets(); window.addEventListener('resize', debounce(setHeaderHeightVar, 120)); window.addEventListener('resize', function(){ els('.accordion-content.open').forEach(function(c){ c.style.maxHeight = c.scrollHeight + 'px'; }); }); }
 
