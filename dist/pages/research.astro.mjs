@@ -1,0 +1,25 @@
+import { b as createComponent, r as renderComponent, g as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BUiRGs7h.mjs';
+import 'kleur/colors';
+import 'html-escaper';
+import { $ as $$BaseLayout } from '../chunks/BaseLayout_DD0Yy2Zf.mjs';
+export { renderers } from '../renderers.mjs';
+
+const $$Research = createComponent(($$result, $$props, $$slots) => {
+  const title = "Research \u2014 Oliver Hitchens";
+  const description = "Research publications and thesis \u2014 Oliver Hitchens.";
+  return renderTemplate`${renderComponent($$result, "BaseLayout", $$BaseLayout, { "title": title, "description": description }, { "default": ($$result2) => renderTemplate`  ${maybeRenderHead()}<div class="full-bleed-hero" style="background-image:url('/assets/images/header.jpg');"> <h1 style="color:#fff;font-size:clamp(2.4rem,5vw,4.2rem);margin:0;text-align:center;">Research Publications</h1> </div> <main class="container page-content"> <article> <section id="journal-articles"> <h2>Journal Articles</h2> <p>O. Hitchens, and A. Lucca Fabris, "Effect of Magnetic Field Strength Gradient on Electron Cyclotron Resonance (ECR) Magnetic Nozzle Thruster Performance", Journal of Physics D: Applied Physics, 2026. (preprint under review) — <a href="https://drive.google.com/file/d/1tNM1XhzRyZ_xL9oxoNevIeznPnrwTlTM/view">Preprint</a></p> </section> <section id="conference-proceedings"> <h2>Conference Proceedings</h2> <p>O. Hitchens, S. Lane, C. P. Bridges, and A. Lucca Fabris, "Frequency Difference Effects on the Performance of a Dual Frequency ECR Magnetic Nozzle Thruster", 39th International Electric Propulsion Conference, 2025. — <a href="https://openresearch.surrey.ac.uk/esploro/outputs/991062228802346">Paper</a></p> <p>O. Hitchens, and A. Lucca Fabris, "Development of a Novel Electron Cyclotron Resonance Magnetic Nozzle Thruster with Magnetically Thickened Resonance Region", 38th International Electric Propulsion Conference, 2024. — <a href="https://openresearch.surrey.ac.uk/esploro/outputs/99991466502346">Paper</a></p> </section> <section id="phd-thesis"> <h2>Ph.D. Thesis</h2> <p>O. Hitchens, Performance increase of electron cyclotron resonance magnetic nozzle thruster via magnetically thickened resonance region, Ph.D. thesis, University of Surrey, 2025. — <a href="https://doi.org/10.15126/thesis.901635">doi:10.15126/thesis.901635</a></p> </section> <section id="patent"> <h2>Patent Pending</h2> <p>O. Hitchens, "Electron Cyclotron Resonance Magnetic Nozzle Thruster, WO2025262418", 2025. — <a href="https://patentscope.wipo.int/search/en/WO2025262418">WO2025262418</a></p> </section> </article> </main> ` })}`;
+}, "/Users/Ollie/git/ohitch_website/src/pages/research.astro", void 0);
+
+const $$file = "/Users/Ollie/git/ohitch_website/src/pages/research.astro";
+const $$url = "/research";
+
+const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: $$Research,
+  file: $$file,
+  url: $$url
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const page = () => _page;
+
+export { page };
