@@ -36,16 +36,20 @@
     var thumb = 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg';
     var img = document.createElement('img'); img.src = thumb; img.alt = div.dataset.title || 'YouTube thumbnail';
     div.appendChild(img);
-    var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video');
+    var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video'); btn.type = 'button';
     div.appendChild(btn);
     div.addEventListener('click', function(){
-      var iframe=document.createElement('iframe');
+      var iframe = document.createElement('iframe');
       iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
       iframe.setAttribute('allowfullscreen','');
       iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1';
       iframe.style.width = '100%';
       var width = div.clientWidth || 560; iframe.style.height = Math.round(width * 9 / 16) + 'px';
-      div.parentNode.replaceChild(iframe, div);
+      iframe.style.border = '0';
+      iframe.style.boxShadow = 'none';
+      // replace thumb + button but keep the placeholder div so layout remains identical
+      while(div.firstChild) div.removeChild(div.firstChild);
+      div.appendChild(iframe);
     }, { once: true });
   }
 
