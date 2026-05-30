@@ -27,8 +27,9 @@
       // img and button are absolutely positioned by CSS so removing them won't cause layout jump
       var img = document.createElement('img'); img.src = thumb; img.alt = div.dataset.title || 'YouTube thumbnail';
       var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video'); btn.type = 'button';
-      // add simple inline SVG triangle (accessible-hidden)
-      btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#fff" d="M8 5v14l11-7z"/></svg>';
+      // add simple inline SVG triangle (scaled 1.5x so triangle is 50% larger)
+      // scale is applied around the SVG center so the circular backdrop stays the same size
+      btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="36" height="36"><g transform="translate(12 12) scale(1.5) translate(-12 -12)"><path fill="#fff" d="M8 5v14l11-7z"/></g></svg>';
       div.appendChild(img);
       div.appendChild(btn);
       div.addEventListener('click', function(){
