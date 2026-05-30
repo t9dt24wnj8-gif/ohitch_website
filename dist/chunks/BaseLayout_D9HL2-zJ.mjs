@@ -4,7 +4,7 @@ import 'html-escaper';
 import 'clsx';
 
 const $$Header = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${maybeRenderHead()}<header class="site-header"> <div class="container header-inner"> <a class="brand" href="/"> <img src="/assets/images/logo_image.gif" alt="Oliver Hitchens logo" class="logo"> <span class="name">Oliver Hitchens</span> </a> <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav"> <span class="sr-only">Toggle navigation</span> <span class="nav-icon"><span></span><span></span><span></span></span> </button> <nav id="main-nav" class="main-nav" aria-label="Main navigation"> <a href="/">Engineering</a> <a href="/research">Research</a> <a href="/ep-video-archive">EP Video Archive</a> </nav> </div> </header>`;
+  return renderTemplate`${maybeRenderHead()}<header class="site-header"> <div class="container header-inner"> <a class="brand" href="/" aria-label="Oliver Hitchens"> <img src="/assets/images/logo_image.gif" alt="Oliver Hitchens logo" class="logo"> <span class="name" aria-hidden="true">liver Hitchens</span> </a> <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav"> <span class="sr-only">Toggle navigation</span> <span class="nav-icon"><span></span><span></span><span></span></span> </button> <nav id="main-nav" class="main-nav" aria-label="Main navigation"> <a href="/">Engineering</a> <a href="/research">Research</a> <a href="/ep-video-archive">EP Video Archive</a> </nav> </div> </header>`;
 }, "/Users/Ollie/git/ohitch_website/src/components/Header.astro", void 0);
 
 const $$Footer = createComponent(($$result, $$props, $$slots) => {

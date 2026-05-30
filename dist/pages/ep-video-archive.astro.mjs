@@ -1,7 +1,7 @@
 import { b as createComponent, r as renderComponent, g as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BUiRGs7h.mjs';
 import 'kleur/colors';
 import 'html-escaper';
-import { $ as $$BaseLayout } from '../chunks/BaseLayout_DD0Yy2Zf.mjs';
+import { $ as $$BaseLayout } from '../chunks/BaseLayout_D9HL2-zJ.mjs';
 export { renderers } from '../renderers.mjs';
 
 const $$EpVideoArchive = createComponent(($$result, $$props, $$slots) => {
