@@ -1,48 +1,9 @@
-/* Minimal site JS: search, nav toggle, accessibility, accordion, and YouTube lazy loading */
+/* Minimal site JS: nav toggle, accessibility, accordion, and YouTube lazy loading */
 (function(){
   function el(sel, ctx){return (ctx||document).querySelector(sel)}
   function els(sel, ctx){return Array.from((ctx||document).querySelectorAll(sel))}
 
   var BASE = (typeof window.SITE_BASE !== 'undefined') ? window.SITE_BASE : './';
-
-  // Load site index (optional)
-  var SITE_INDEX = null;
-  fetch(BASE + 'assets/search_index.json').then(function(r){ if(r.ok) return r.json(); throw r}).then(function(j){ SITE_INDEX = j }).catch(function(){ SITE_INDEX = null });
-
-  // Search
-  var searchBox = el('#search-box');
-  var searchResults = el('#search-results');
-  function renderResults(items){ if(!searchResults) return; searchResults.innerHTML=''; if(!items||!items.length){ searchResults.innerHTML='<p class="muted">No results</p>'; return };
-    items.slice(0,20).forEach(function(it){
-      var d=document.createElement('div'); d.className='result-item';
-      var a=document.createElement('a'); a.href = BASE + it.url + (it.anchor?('#'+it.anchor):''); a.textContent = it.title + (it.heading?(' — ' + it.heading):'');
-      d.appendChild(a);
-      var p=document.createElement('p'); p.textContent = it.snippet || '';
-      d.appendChild(p);
-      searchResults.appendChild(d);
-    })
-  }
-
-  function doSearch(q){ if(!SITE_INDEX) return renderResults([]); q=q.trim().toLowerCase(); if(!q) return renderResults([]);
-    var terms=q.split(/\s+/);
-    var found=[];
-    SITE_INDEX.pages.forEach(function(p){
-      if(p.title && p.title.toLowerCase().indexOf(q)!==-1){ found.push({url:p.url,title:p.title,heading:'',snippet:p.summary||''}) }
-      p.sections.forEach(function(s){
-        var text=(s.heading||'')+" " + (s.text||'');
-        var lower=text.toLowerCase();
-        var ok=true; for(var i=0;i<terms.length;i++){ if(lower.indexOf(terms[i])===-1){ ok=false; break } }
-        if(ok){ found.push({url:p.url,title:p.title,heading:s.heading,anchor:s.id,snippet:(s.text||'').slice(0,180)}) }
-      })
-    })
-    renderResults(found)
-  }
-
-  if(searchBox){
-    var to=null;
-    searchBox.addEventListener('input', function(e){ clearTimeout(to); to=setTimeout(function(){ doSearch(searchBox.value) }, 180) })
-    searchBox.addEventListener('keydown', function(e){ if(e.key==='Enter'){ doSearch(searchBox.value) } })
-  }
 
   // Mobile nav toggle
   function initNavToggle(){
@@ -75,7 +36,7 @@
     var thumb = 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg';
     var img = document.createElement('img'); img.src = thumb; img.alt = div.dataset.title || 'YouTube thumbnail';
     div.appendChild(img);
-    var btn = document.createElement('button'); btn.className = 'play'; btn.textContent = 'Play';
+    var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video');
     div.appendChild(btn);
     div.addEventListener('click', function(){
       var iframe=document.createElement('iframe');
@@ -93,6 +54,6 @@
   // Keep open accordion heights on resize
   window.addEventListener('resize', function(){ els('.accordion-content.open').forEach(function(c){ c.style.maxHeight = c.scrollHeight + 'px'; }) });
 
-  document.addEventListener('DOMContentLoaded', function(){ initNavToggle(); initAccordions(); initYouTube(); if(searchBox){ searchBox.addEventListener('focus', function(){ var nav = el('#main-nav'); if(nav && nav.classList.contains('open')){ nav.classList.remove('open'); el('#nav-toggle') && el('#nav-toggle').setAttribute('aria-expanded','false'); } }) } });
+  document.addEventListener('DOMContentLoaded', function(){ initNavToggle(); initAccordions(); initYouTube(); });
 
 })();

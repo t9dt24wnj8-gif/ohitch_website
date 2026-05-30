@@ -1,7 +1,7 @@
 {
   "pages": [
     {
-      "url": "pages/engineering.html",
+      "url": "engineering.html",
       "title": "Engineering Projects",
       "summary": "Engineering projects, test facilities and thruster development.",
       "sections": [
@@ -12,7 +12,7 @@
       ]
     },
     {
-      "url": "pages/research.html",
+      "url": "research.html",
       "title": "Research Publications",
       "summary": "Journal articles, conference proceedings, PhD thesis and patent information.",
       "sections": [
@@ -22,7 +22,7 @@
       ]
     },
     {
-      "url": "pages/ep-video-archive.html",
+      "url": "ep-video-archive.html",
       "title": "EP Video Archive",
       "summary": "An archive of electric propulsion hot-fire and on-orbit videos across multiple categories.",
       "sections": [
