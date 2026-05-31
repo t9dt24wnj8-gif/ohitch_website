@@ -57,34 +57,69 @@
   // YouTube lazy players (create iframe only on click)
   function makeYouTube(div){ try{ var id = div.dataset.id; if(!id) return; var thumb = 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg'; var img = document.createElement('img'); img.src = thumb; img.alt = div.dataset.title || 'YouTube thumbnail'; div.appendChild(img); var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video'); btn.type = 'button'; div.appendChild(btn); div.addEventListener('click', function(){ var iframe = document.createElement('iframe'); iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'); iframe.setAttribute('allowfullscreen',''); iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1'; iframe.style.width = '100%'; var width = div.clientWidth || 560; iframe.style.height = Math.round(width * 9 / 16) + 'px'; iframe.style.border = '0'; iframe.style.boxShadow = 'none'; while(div.firstChild) div.removeChild(div.firstChild); div.appendChild(iframe); }, { once: true }); }catch(e){ console.error(e); } }
 
+  // Load YouTube IFrame API once and return a promise that resolves with window.YT
+  function loadYouTubeAPI(){
+    if(window._ohitch_yt_promise) return window._ohitch_yt_promise;
+    window._ohitch_yt_promise = new Promise(function(resolve){
+      if(window.YT && window.YT.Player) return resolve(window.YT);
+      var script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.async = true;
+      document.head.appendChild(script);
+      var resolved = false;
+      window.onYouTubeIframeAPIReady = function(){ resolved = true; resolve(window.YT); };
+      // Fallback: if API doesn't load quickly, resolve with whatever we have
+      setTimeout(function(){ if(!resolved) resolve(window.YT || null); }, 5000);
+    });
+    return window._ohitch_yt_promise;
+  }
+
   function makeYouTube(div){
     try{
       var id = div.dataset.id; if(!id) return;
       var thumb = 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg';
-      // img and button are absolutely positioned by CSS so removing them won't cause layout jump
       var img = document.createElement('img'); img.src = thumb; img.alt = div.dataset.title || 'YouTube thumbnail';
       var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video'); btn.type = 'button';
-      // add simple inline SVG triangle (scaled 1.5x so triangle is 50% larger)
-      // scale is applied around the SVG center so the circular backdrop stays the same size
       btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="36" height="36"><g transform="translate(12 12) scale(1.5) translate(-12 -12)"><path fill="#fff" d="M8 5v14l11-7z"/></g></svg>';
       div.appendChild(img);
       div.appendChild(btn);
-      div.addEventListener('click', function(){
-        var iframe = document.createElement('iframe');
-        // allow autoplay and inline playback for mobile and enable JS API for robust control
-        iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
-        iframe.setAttribute('allowfullscreen','');
-        iframe.setAttribute('loading','lazy');
-        // enablejsapi improves reliability when we postMessage play commands
-        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&enablejsapi=1&autoplay=1&playsinline=1';
-        iframe.style.border = '0'; iframe.style.boxShadow = 'none';
+
+      var uid = 'yt-player-' + id + '-' + Math.floor(Math.random()*1000000);
+
+      var onClick = function(e){
+        e.preventDefault();
+        // clear thumbnail and button
         while(div.firstChild) div.removeChild(div.firstChild);
-        div.appendChild(iframe);
-        // Nudge playback via postMessage once iframe loads (helps some mobile browsers)
-        iframe.addEventListener('load', function(){
-          try{ iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'); }catch(e){}
-        });
-      }, { once: true });
+        var holder = document.createElement('div'); holder.id = uid; holder.style.width = '100%'; holder.style.height = '100%';
+        div.appendChild(holder);
+
+        var createPlayer = function(YT){
+          try{
+            if(!YT || !YT.Player) throw new Error('YT not available');
+            new YT.Player(uid, {
+              videoId: id,
+              playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1, origin: location.origin },
+              events: { onReady: function(ev){ try{ ev.target.playVideo(); }catch(err){} } }
+            });
+          }catch(err){
+            // Fallback: plain iframe with autoplay
+            var iframe = document.createElement('iframe');
+            iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
+            iframe.setAttribute('allowfullscreen','');
+            iframe.setAttribute('loading','lazy');
+            iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&origin=' + encodeURIComponent(location.origin);
+            while(div.firstChild) div.removeChild(div.firstChild);
+            div.appendChild(iframe);
+          }
+        };
+
+        if(window.YT && window.YT.Player){ createPlayer(window.YT); }
+        else { loadYouTubeAPI().then(function(YT){ if(YT && YT.Player) createPlayer(YT); else createPlayer(null); }).catch(function(){ createPlayer(null); }); }
+
+        div.removeEventListener('click', onClick);
+      };
+
+      div.addEventListener('click', onClick, { once: true });
     }catch(e){ console.error(e); }
   }
 

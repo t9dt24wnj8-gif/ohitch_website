@@ -134,9 +134,9 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 	.hero-intro .hero-image{max-width:100%;flex:0 0 auto}
 	.media-row{flex-direction:column}
 
-	/* make header fixed on small screens and push body content down so header sits at the very top */
-	.site-header{position:fixed;left:0;right:0;top:0}
-	/* Body padding is applied dynamically by JS to avoid CSS var reflow loops */
+	/* Keep header sticky on small screens (reverted from forced fixed to avoid layout issues) */
+	.site-header{position:sticky;top:0}
+	/* Body padding is applied dynamically by JS when header becomes fixed (not used for sticky) */
 
 	/* mobile nav link style: make buttons more clickable */
 	.main-nav a{display:block;padding:0.85rem 1rem;border-radius:8px;margin:0.25rem 0;color:var(--text);text-decoration:none;transition:transform .12s ease, background-color .12s ease}
