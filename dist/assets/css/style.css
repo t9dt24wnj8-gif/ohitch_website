@@ -13,10 +13,10 @@ body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe
 .container{max-width:1400px;margin:0 auto;padding:2.5rem}
 .site-header{position:sticky;top:0;z-index:50;border-bottom:none;background:transparent;overflow:visible;padding-top:env(safe-area-inset-top)}
 .site-header::before{content:"";position:absolute;left:0;right:0;top:0;bottom:-6px;background:linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 100%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);pointer-events:none}
-.header-inner{display:flex;align-items:center;gap:1rem;padding:0.6rem 1rem;position:relative;z-index:1}
+.header-inner{display:flex;align-items:center;gap:0.75rem;padding:0.45rem 0.8rem;position:relative;z-index:1}
 .brand{display:flex;align-items:center;gap:0.6rem;text-decoration:none;color:inherit;flex-shrink:0;position:relative}
-.logo{width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));z-index:2;position:relative}
-.name{font-weight:300;color:var(--text);font-size:2.8rem;margin-left:-0.5rem;position:relative;z-index:1}
+.logo{width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));z-index:2;position:relative}
+.name{font-weight:300;color:var(--text);font-size:2.2rem;margin-left:-0.4rem;position:relative;z-index:1}
 .nav-toggle{background:transparent;border:0;color:var(--text);padding:6px;border-radius:6px;display:none;cursor:pointer}
 .nav-toggle .nav-icon{display:flex;flex-direction:column;gap:4px;height:22px;width:24px;align-items:center;justify-content:center}
 .nav-toggle .nav-icon span{display:block;width:18px;height:3px;background:var(--text);border-radius:2px}
@@ -33,7 +33,7 @@ figure img{max-width:100%;height:auto;border-radius:0}
 .hero-intro{display:flex;gap:1.5rem;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem}
 .hero-intro .intro-text{flex:1;min-width:0}
 .hero-intro .intro-text h1{font-size:1.6rem;margin:0 0 0.4rem}
-.hero-intro .hero-image{flex:0 0 42%;max-width:42%}
+.hero-intro .hero-image{flex:0 0 42%;max-width:42%;margin:0;align-self:flex-start}
 .hero-intro .hero-image img{border-radius:0;display:block;width:100%;height:auto}
 
 .links-grid{display:flex;gap:0.8rem;flex-wrap:wrap;justify-content:center;margin:1.5rem 0}
@@ -52,7 +52,7 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 /* Media rows: text + video/gif side-by-side on desktop, stacked on mobile */
 .media-row{display:flex;gap:1.2rem;align-items:flex-start;margin:1rem 0;padding:0}
 .media-row .media-text{flex:1;min-width:0}
-.media-row .media-video{flex:0 0 48%;display:flex;align-items:center;justify-content:center}
+.media-row .media-video{flex:0 0 48%;display:flex;align-items:flex-start;justify-content:flex-start}
 .media-row .media-video .youtube-player{max-width:100%}
 .media-row + .media-row{margin-top:2rem}
 .video-entry{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin:0.6rem 0}
@@ -182,14 +182,15 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 	.video-entry .youtube-player{flex-basis:100%;max-width:100%;width:100%}
 
 	/* Reduce header vertical padding by ~30% on mobile */
-	.header-inner{padding:0.42rem 1rem}
+	.header-inner{padding:0.32rem 0.8rem}
 
 
-@media(min-width:720px){.header-inner{padding:0.8rem 1rem}.main-nav a{padding:8px 10px}}
+@media(min-width:720px){.header-inner{padding:0.6rem 0.8rem}.main-nav a{padding:8px 10px}}
 
 @media(min-width:720px){
 	/* Align each media heading with the top of its video on desktop for ep-video-archive */
-	.ep-video-archive .media-row .media-text h3{ margin-top: 0; }
+	.ep-video-archive .media-row .media-text h3{ margin-top: 0 !important; }
+	.ep-video-archive .media-row .media-text, .ep-video-archive .media-row .media-video{ align-self: flex-start; }
 }
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
