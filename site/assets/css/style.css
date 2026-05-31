@@ -113,6 +113,9 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 .home .page-content .video-entry,
 .home .page-content .youtube-player{margin-top:3rem;margin-bottom:3rem}
 
+/* Avoid extra top spacing for figures inside side-by-side groups */
+.home .page-content .side-by-side figure{margin-top:0;margin-bottom:0}
+
 /* After the GAUSS section, add a single blank line above figures, video entries and side-by-side groups */
 #gauss ~ section figure,
 #gauss ~ section .video-entry,
