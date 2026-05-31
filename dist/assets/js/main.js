@@ -46,6 +46,23 @@
   }
 
   function initYouTube(){ els('.youtube-player').forEach(function(d){ if(d && d.dataset && d.dataset.id) makeYouTube(d); }); }
+  
+  // Double homepage headings (except the hero H1 "Hello, I'm Ollie").
+  function adjustHomepageHeadings(){
+    try{
+      var path = (location.pathname || '').replace(/\\/g,'/');
+      var isHome = path === '/' || path.endsWith('/index.html') || path === '';
+      if(!isHome) return;
+      var nodes = document.querySelectorAll('.page-content h1, .page-content h2, .page-content h3, .hero-intro h1, .hero-intro h2, .hero-intro h3');
+      Array.from(nodes).forEach(function(h){
+        var txt = (h.textContent || '').trim().replace(/\s+/g,' ');
+        if(h.tagName.toLowerCase()==='h1' && txt === "Hello, I'm Ollie") return;
+        var cs = window.getComputedStyle(h);
+        var size = parseFloat(cs.fontSize);
+        if(!isNaN(size) && size>0){ h.style.fontSize = (size * 2) + 'px'; }
+      });
+    }catch(e){ console.error(e); }
+  }
 
   // Open external links in new tab and add rel for security; keep internal links as-is
   function initLinkTargets(){ els('a').forEach(function(a){ try{ if(a.hasAttribute('target')) return; var href = a.getAttribute('href'); if(!href) return; // skip anchors and javascript: mailto: etc
@@ -55,7 +72,10 @@
     }); }
 
   function onReady(){ setHeaderHeightVar(); initNavToggle(); initAccordions(); initYouTube(); initLinkTargets(); window.addEventListener('resize', debounce(setHeaderHeightVar, 120)); window.addEventListener('resize', function(){ els('.accordion-content.open').forEach(function(c){ c.style.maxHeight = c.scrollHeight + 'px'; }); }); }
+  
+  // call homepage heading adjuster after other inits
+  function onReadyWithAdjust(){ onReady(); adjustHomepageHeadings(); }
 
-  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', onReady); } else { onReady(); }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', onReadyWithAdjust); } else { onReadyWithAdjust(); }
 
 })();

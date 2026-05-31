@@ -14,7 +14,7 @@ body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe
 .site-header{background:linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(255,255,255,0)), linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0));border-bottom:none;position:sticky;top:0;z-index:50;backdrop-filter:blur(6px);overflow:visible}
 .header-inner{display:flex;align-items:center;gap:1rem;padding:0.6rem 1rem}
 .brand{display:flex;align-items:center;gap:0.6rem;text-decoration:none;color:inherit;flex-shrink:0;position:relative}
-.logo{width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));z-index:2;position:relative}
+.logo{width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));z-index:2;position:relative}
 .name{font-weight:300;color:var(--text);font-size:2.8rem;margin-left:-0.5rem;position:relative;z-index:1}
 .nav-toggle{background:transparent;border:0;color:var(--text);padding:6px;border-radius:6px;display:none;cursor:pointer}
 .nav-toggle .nav-icon{display:flex;flex-direction:column;gap:4px;height:22px;width:24px;align-items:center;justify-content:center}
@@ -36,7 +36,8 @@ figure img{max-width:100%;height:auto;border-radius:0}
 .hero-intro .hero-image img{border-radius:0;display:block;width:100%;height:auto}
 
 .links-grid{display:flex;gap:0.8rem;flex-wrap:wrap;justify-content:center;margin:1.5rem 0}
-.links-grid a{display:inline-block;padding:0.6rem 1rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--text);text-decoration:none}
+.links-grid a{display:inline-block;padding:0.6rem 1rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--text);text-decoration:none;transition:transform .18s ease, background .18s ease, color .18s ease}
+.links-grid a:hover{background:rgba(255,255,255,0.03);transform:translateY(-2px)}
 
 /* Engineering hero: extra space before buttons and keep buttons white */
 .hero-intro .links-grid{margin-top:2.5rem}
@@ -54,7 +55,10 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 .media-row .media-video .youtube-player{max-width:100%}
 .media-row + .media-row{margin-top:2rem}
 .video-entry{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin:0.6rem 0}
-.video-entry .youtube-player{flex:1 1 48%;max-width:48%;padding-top:56.25%}
+.video-entry .youtube-player{flex:1 1 48%;max-width:48%;aspect-ratio:16/9;padding-top:0;position:relative}
+@supports not (aspect-ratio:16/9){
+	.video-entry .youtube-player{padding-top:56.25%}
+}
 
 /* Make page links blue and underlined for readability */
 .page-content a{color:var(--accent);text-decoration:underline}
@@ -76,14 +80,14 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 
 .accordion{margin:2rem 0;border:1px solid rgba(255,255,255,0.04);border-radius:8px;overflow:hidden;background:var(--card);transition:box-shadow .28s ease, transform .28s ease}
 .accordion-toggle{background:transparent;color:var(--text);border:none;width:100%;padding:0;cursor:pointer}
-.accordion-toggle .section-hero{padding:1rem;border-radius:0;color:#fff;background-size:auto 100%;background-position:center top;min-height:210px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;transition:background-size .6s cubic-bezier(0.2,0,0.2,1), min-height .5s cubic-bezier(0.2,0,0.2,1), transform .6s cubic-bezier(0.2,0,0.2,1);transform-origin:center top}
-.accordion-toggle .section-hero h2{margin:0;font-size:3.15rem;color:#fff;transition:font-size .45s cubic-bezier(0.2,0,0.2,1)}
+.accordion-toggle .section-hero{padding:1rem;border-radius:0;color:#fff;background-size:100% auto;background-position:center top;background-repeat:no-repeat;min-height:210px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;transition:min-height .6s cubic-bezier(0.22,0.0,0.2,1), background-position .6s cubic-bezier(0.22,0.0,0.2,1);transform-origin:center top}
+.accordion-toggle .section-hero h2{margin:0;font-size:3.15rem;color:#fff;transition:font-size .45s cubic-bezier(0.22,0.0,0.2,1)}
 .accordion-toggle .section-hero .small-italic{margin-top:0.4rem}
 .accordion-content{max-height:0;overflow:hidden;opacity:0;transform:translateY(-6px);transition:max-height .34s ease,opacity .26s ease,transform .26s ease;padding:0 1rem}
 .accordion-content.open{max-height:2400px;opacity:1;transform:translateY(0);padding:1rem}
 
 /* visual boost when an accordion is expanded */
-.accordion-toggle[aria-expanded="true"] .section-hero{min-height:280px;background-size:auto 110%;transform:scaleY(1.04)}
+.accordion-toggle[aria-expanded="true"] .section-hero{min-height:360px;background-size:100% auto}
 .accordion-toggle[aria-expanded="true"] .section-hero h2{font-size:3.6rem}
 .accordion.open{box-shadow:0 12px 30px rgba(0,0,0,0.45);transform:translateY(-4px)}
 
@@ -92,7 +96,7 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 .site-footer{border-top:1px solid rgba(255,255,255,0.03);padding:2rem 0;margin-top:4rem;color:var(--muted);text-align:center}
 
 /* Engineering page specific tweaks */
-#plasma-toroid figure img{max-width:50%;width:50%;margin:0 auto;display:block}
+#plasma-toroid figure img{max-width:25%;width:25%;margin:0 auto;display:block}
 #small-ecr .side-by-side{display:flex;gap:0.6rem;align-items:flex-start;justify-content:center;flex-wrap:wrap}
 #small-ecr .side-by-side figure{flex:1 1 48%}
 #rfa-hotfire figure img,#aquajet figure img{max-width:50%;width:50%;margin:0 auto;display:block}
