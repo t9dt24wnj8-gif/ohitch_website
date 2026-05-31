@@ -9,7 +9,24 @@
   function debounce(fn, wait){ var t; return function(){ var args=arguments, ctx=this; clearTimeout(t); t = setTimeout(function(){ fn.apply(ctx,args); }, wait); } }
 
   // Set a CSS variable with the current header height so full-bleed heroes sit behind it
-  function setHeaderHeightVar(){ var hdr = el('.site-header'); if(!hdr) return; var h = Math.round(hdr.getBoundingClientRect().height); document.documentElement.style.setProperty('--header-height', h + 'px'); els('.full-bleed-hero').forEach(function(hero){ hero.style.marginTop = 'calc(var(--header-height) * -1)'; hero.style.paddingTop = 'var(--header-height)'; }); }
+  function setHeaderHeightVar(){
+    var hdr = el('.site-header'); if(!hdr) return;
+    var h = Math.round(hdr.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--header-height', h + 'px');
+    // Only apply body padding when header is fixed to avoid layout loops
+    try{
+      var hdrPos = getComputedStyle(hdr).position;
+      if(hdrPos === 'fixed'){
+        document.body.style.paddingTop = h + 'px';
+      } else {
+        document.body.style.paddingTop = '';
+      }
+    }catch(e){ /* ignore */ }
+    // Update full-bleed heroes directly using pixels (avoid calc(var()) reflow loops)
+    els('.full-bleed-hero').forEach(function(hero){ hero.style.marginTop = '-' + h + 'px'; hero.style.paddingTop = h + 'px'; });
+    // Keep mobile nav positioned under header when opened
+    var nav = el('#main-nav'); if(nav) nav.style.top = h + 'px';
+  }
 
   // Mobile nav toggle
   function initNavToggle(){ var btn = el('#nav-toggle'); var nav = el('#main-nav'); if(!btn || !nav) return; btn.addEventListener('click', function(e){ e.stopPropagation(); var open = nav.classList.toggle('open'); btn.setAttribute('aria-expanded', open ? 'true' : 'false'); }); document.addEventListener('click', function(e){ if(!nav.classList.contains('open')) return; if(!nav.contains(e.target) && e.target !== btn){ nav.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } }); }
@@ -54,14 +71,19 @@
       div.appendChild(btn);
       div.addEventListener('click', function(){
         var iframe = document.createElement('iframe');
-        // allow autoplay and inline playback for mobile (playsinline)
+        // allow autoplay and inline playback for mobile and enable JS API for robust control
         iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
         iframe.setAttribute('allowfullscreen','');
         iframe.setAttribute('loading','lazy');
-        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1';
+        // enablejsapi improves reliability when we postMessage play commands
+        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&enablejsapi=1&autoplay=1&playsinline=1';
         iframe.style.border = '0'; iframe.style.boxShadow = 'none';
         while(div.firstChild) div.removeChild(div.firstChild);
         div.appendChild(iframe);
+        // Nudge playback via postMessage once iframe loads (helps some mobile browsers)
+        iframe.addEventListener('load', function(){
+          try{ iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'); }catch(e){}
+        });
       }, { once: true });
     }catch(e){ console.error(e); }
   }
