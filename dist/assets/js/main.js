@@ -55,24 +55,7 @@
     }); btn.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); btn.click(); } }); }); }
 
   // YouTube lazy players (create iframe only on click)
-  function makeYouTube(div){ try{ var id = div.dataset.id; if(!id) return; var thumb = 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg'; var img = document.createElement('img'); img.src = thumb; img.alt = div.dataset.title || 'YouTube thumbnail'; div.appendChild(img); var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video'); btn.type = 'button'; div.appendChild(btn);
-    // ensure the container has an explicit aspect-ratio box so replacement iframes keep size
-    div.style.position = 'relative'; div.style.paddingTop = div.style.paddingTop || (function(){ var ar = 9/16; return (ar * 100) + '%'; })();
-    div.addEventListener('click', function(){
-      // replace with an iframe immediately, ensuring width/height set via CSS
-      while(div.firstChild) div.removeChild(div.firstChild);
-      var iframe = document.createElement('iframe');
-      iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; playsinline');
-      iframe.setAttribute('allowfullscreen','');
-      iframe.setAttribute('loading','lazy');
-      // force playsinline and mute for mobile autoplay attempts
-      iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=1&origin=' + encodeURIComponent(location.origin);
-      iframe.style.position = 'absolute'; iframe.style.left = '0'; iframe.style.top = '0'; iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.style.border = '0'; iframe.style.boxShadow = 'none';
-      div.appendChild(iframe);
-      // add an open-on-youtube button for users to play with sound if autoplay fails
-      var openBtn = document.createElement('a'); openBtn.className = 'yt-unmute'; openBtn.setAttribute('target','_blank'); openBtn.setAttribute('rel','noopener noreferrer'); openBtn.href = 'https://www.youtube.com/watch?v=' + id; openBtn.textContent = 'open on youtube';
-      div.appendChild(openBtn);
-    }, { once: true }); }catch(e){ console.error(e); } }
+  // (Removed duplicate simple handler — see main implementation below)
 
   // Load YouTube IFrame API once and return a promise that resolves with window.YT
   function loadYouTubeAPI(){
@@ -121,9 +104,16 @@
         holder.appendChild(iframe);
         div.appendChild(holder);
 
-        // add an open-on-youtube button for users to open with sound if autoplay fails
-        var openBtn = document.createElement('a'); openBtn.className = 'yt-unmute'; openBtn.setAttribute('target','_blank'); openBtn.setAttribute('rel','noopener noreferrer'); openBtn.href = 'https://www.youtube.com/watch?v=' + id; openBtn.textContent = 'open on youtube';
-        div.appendChild(openBtn);
+        // prepare an "open on YouTube" button but don't show it immediately
+        var openBtn = document.createElement('a');
+        openBtn.className = 'yt-unmute';
+        openBtn.setAttribute('target','_blank');
+        openBtn.setAttribute('rel','noopener noreferrer');
+        openBtn.href = 'https://www.youtube.com/watch?v=' + id;
+        openBtn.textContent = 'open on youtube';
+        openBtn.style.display = 'none';
+        // show the open button only after a short delay if autoplay hasn't started
+        var showOpenBtnTimer = setTimeout(function(){ try{ openBtn.style.display = ''; if(!div.contains(openBtn)) div.appendChild(openBtn); }catch(e){} }, 1400);
 
         // Attempt to upgrade to an API-controlled player when available
         var upgradeToAPI = function(YT){
@@ -135,6 +125,8 @@
               events: {
                 onReady: function(ev){
                   try{
+                    // Cancel showing the open button if the API player is ready and playing
+                    try{ if(showOpenBtnTimer){ clearTimeout(showOpenBtnTimer); showOpenBtnTimer = null; } if(openBtn && openBtn.parentNode){ openBtn.parentNode.removeChild(openBtn); } }catch(e){}
                     if(ev && ev.target && typeof ev.target.mute === 'function') ev.target.mute();
                     ev.target.playVideo();
                     // add an unobtrusive unmute button in case autoplay succeeds muted
@@ -156,11 +148,13 @@
             });
           }catch(err){
             // If upgrade fails, keep the immediate iframe as-is (it already tries autoplay muted)
+            // ensure the open button will be shown (timer will handle it), no extra work here
           }
         };
 
-        if(window.YT && window.YT.Player){ upgradeToAPI(window.YT); }
-        else { loadYouTubeAPI().then(function(YT){ upgradeToAPI(YT); }).catch(function(){}); }
+        // start loading the API and attempt an upgrade; if unavailable, the open button timer will show it
+        if(window.YT && window.YT.Player){ try{ upgradeToAPI(window.YT); }catch(e){} }
+        loadYouTubeAPI().then(function(YT){ try{ upgradeToAPI(YT); }catch(e){} }).catch(function(){});
 
         div.removeEventListener('click', onClick);
       };
