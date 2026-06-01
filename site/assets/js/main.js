@@ -91,46 +91,64 @@
         // remove thumbnail and button
         while(div.firstChild) div.removeChild(div.firstChild);
 
-        // create an immediate muted iframe with JS API enabled (no replacement)
-        var iframe = document.createElement('iframe');
-        iframe.id = uid;
-        iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; playsinline');
-        iframe.setAttribute('allowfullscreen','');
-        iframe.setAttribute('loading','eager');
-        iframe.style.position = 'absolute'; iframe.style.left = '0'; iframe.style.top = '0'; iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.style.border = '0'; iframe.style.boxShadow = 'none';
-        // append first, then set src so the navigation/playback is more reliably associated with the user gesture
-        div.appendChild(iframe);
-        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
+        // Preferred path: if YT API is ready, instantiate a YT.Player immediately
+        // so the single user gesture (click) can start unmuted playback and
+        // request minimal controls (controls=0) to avoid overlays.
+        function createPlayerViaAPI(){
+          try{
+            var container = document.createElement('div');
+            container.id = uid;
+            container.style.position = 'absolute'; container.style.left = '0'; container.style.top = '0'; container.style.width = '100%'; container.style.height = '100%'; container.style.border = '0'; container.style.boxShadow = 'none';
+            div.appendChild(container);
 
-        // lightweight unmute control: reveal after a short delay so it doesn't overlay immediately
-        var unmuteBtn = document.createElement('button');
-        unmuteBtn.className = 'yt-unmute'; unmuteBtn.type = 'button'; unmuteBtn.textContent = 'unmute'; unmuteBtn.style.display = 'none';
-        div.appendChild(unmuteBtn);
-        var revealTimer = setTimeout(function(){ try{ unmuteBtn.style.display = ''; }catch(e){} }, 900);
+            var player = new YT.Player(uid, {
+              height: '100%', width: '100%', videoId: id,
+              playerVars: {
+                rel: 0,
+                modestbranding: 1,
+                playsinline: 1,
+                controls: 0,
+                iv_load_policy: 3,
+                disablekb: 1,
+                origin: location.origin,
+                autoplay: 1
+              },
+              events: {
+                onReady: function(ev){
+                  try{ if(ev && ev.target){ try{ ev.target.unMute && ev.target.unMute(); }catch(_){} try{ ev.target.playVideo && ev.target.playVideo(); }catch(_){} } }catch(err){}
+                },
+                onError: function(){ /* fallback handled below */ }
+              }
+            });
+            return true;
+          }catch(err){ return false; }
+        }
 
-        // When user explicitly requests unmute, attach a YT.Player to the existing iframe (user gesture)
-        var onUnmute = function(ev){
-          ev.preventDefault();
-          try{ if(revealTimer){ clearTimeout(revealTimer); revealTimer = null; } }catch(e){}
-          unmuteBtn.disabled = true;
-          loadYouTubeAPI().then(function(YT){
-            try{
-              var player = new YT.Player(uid, {
-                playerVars: { rel: 0, modestbranding: 1, playsinline: 1, origin: location.origin },
-                events: {
-                  onReady: function(apiEvent){
-                    try{ if(apiEvent && apiEvent.target && typeof apiEvent.target.unMute === 'function'){ apiEvent.target.unMute(); apiEvent.target.playVideo(); } }catch(err){}
-                    try{ if(unmuteBtn && unmuteBtn.parentNode){ unmuteBtn.parentNode.removeChild(unmuteBtn); } }catch(e){}
-                  }
-                }
-              });
-            }catch(err){ window.open('https://www.youtube.com/watch?v=' + id, '_blank', 'noopener,noreferrer'); }
-          }).catch(function(){ window.open('https://www.youtube.com/watch?v=' + id, '_blank', 'noopener,noreferrer'); });
-          unmuteBtn.removeEventListener('click', onUnmute);
-        };
+        function createIframeFallback(){
+          var iframe = document.createElement('iframe');
+          iframe.id = uid;
+          iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; playsinline');
+          iframe.setAttribute('allowfullscreen','');
+          iframe.setAttribute('loading','eager');
+          iframe.style.position = 'absolute'; iframe.style.left = '0'; iframe.style.top = '0'; iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.style.border = '0'; iframe.style.boxShadow = 'none';
+          div.appendChild(iframe);
+          // Use autoplay=1&mute=0 on user gesture so audio will play where allowed;
+          // also request minimal controls to hide overlays where possible.
+          iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=0&enablejsapi=1&controls=0&origin=' + encodeURIComponent(location.origin);
+        }
 
-        unmuteBtn.addEventListener('click', onUnmute);
-
+        if(window.YT && window.YT.Player){
+          var ok = createPlayerViaAPI();
+          if(!ok){ createIframeFallback(); }
+        } else {
+          // API not present: attempt to load (was preloaded in onReady) but fall back
+          // to a direct iframe with sound (user gesture) if API boot isn't fast enough.
+          try{
+            // try to create player if/when API loads quickly
+            if(window.YT && window.YT.Player){ if(!createPlayerViaAPI()) createIframeFallback(); }
+            else { createIframeFallback(); }
+          }catch(e){ createIframeFallback(); }
+        }
       };
       div.addEventListener('click', onClick, { once: true });
     }catch(e){ console.error(e); }
@@ -181,7 +199,11 @@
     }catch(e){}
   }
 
-  function onReady(){ setHeaderHeightVar(); initNavToggle(); initAccordions(); normalizeMediaLinks(); initYouTube(); initLinkTargets(); window.addEventListener('resize', debounce(setHeaderHeightVar, 120)); window.addEventListener('resize', function(){ els('.accordion-content.open').forEach(function(c){ c.style.maxHeight = c.scrollHeight + 'px'; }); }); }
+  function onReady(){ setHeaderHeightVar(); initNavToggle(); initAccordions(); normalizeMediaLinks(); initYouTube(); initLinkTargets();
+    // Preload YouTube API early so a single click can instantiate a player
+    // and start unmuted playback without requiring a second explicit unmute.
+    try{ loadYouTubeAPI(); }catch(e){}
+    window.addEventListener('resize', debounce(setHeaderHeightVar, 120)); window.addEventListener('resize', function(){ els('.accordion-content.open').forEach(function(c){ c.style.maxHeight = c.scrollHeight + 'px'; }); }); }
   
   // call homepage heading adjuster after other inits
   function onReadyWithAdjust(){ onReady(); adjustHomepageHeadings(); }
