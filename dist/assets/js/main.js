@@ -102,8 +102,8 @@
         iframe.setAttribute('allowfullscreen','');
         iframe.setAttribute('loading','eager');
         iframe.style.position = 'absolute'; iframe.style.left = '0'; iframe.style.top = '0'; iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.style.border = '0'; iframe.style.boxShadow = 'none';
-        // minimal UI parameters: controls=0, modestbranding and playsinline
-        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=0&enablejsapi=1&controls=0&iv_load_policy=3&origin=' + encodeURIComponent(location.origin);
+        // minimal UI parameters: request controls so fullscreen is available
+        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=0&enablejsapi=1&controls=1&fs=1&iv_load_policy=3&origin=' + encodeURIComponent(location.origin);
         div.appendChild(iframe);
 
         // Add an overlay to hide YouTube chrome until playback starts
@@ -124,7 +124,7 @@
           if(window.YT && window.YT.Player){
             try{
               var ap = new YT.Player(uid, {
-                playerVars: { rel:0, modestbranding:1, playsinline:1, controls:0, iv_load_policy:3, disablekb:1, origin:location.origin },
+                playerVars: { rel:0, modestbranding:1, playsinline:1, controls:1, fs:1, iv_load_policy:3, disablekb:1, origin:location.origin },
                 events: {
                   onReady: function(ev){ try{ clearTimeout(fallbackTimer); _played = true; removeOverlay(); }catch(e){} },
                   onStateChange: function(ev){ try{ if(ev && ev.data === 1){ clearTimeout(fallbackTimer); _played = true; removeOverlay(); } }catch(e){} }
