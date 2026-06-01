@@ -186,7 +186,7 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 		-webkit-box-orient:vertical;
 		-webkit-line-clamp:2;
 		overflow:hidden;
-		font-size:2.0rem; /* slightly larger baseline, allow wrap */
+		font-size:1.8rem; /* slightly larger baseline, allow wrap */
 		line-height:1.08;
 		max-width:88%;
 		margin:0 auto;
