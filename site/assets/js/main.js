@@ -136,6 +136,17 @@
     }catch(e){ console.error(e); }
   }
 
+  // Initialize YouTube placeholders on the page by calling makeYouTube
+  function initYouTube(){
+    els('.youtube-player').forEach(function(div){
+      try{ if(div.dataset.inited) return; div.dataset.inited = '1'; makeYouTube(div); }catch(e){}
+    });
+  }
+
+  // No-op helpers kept for compatibility with older builds
+  function adjustHomepageHeadings(){ /* intentionally empty for now */ }
+  function insertWbrBeforeParenOnHome(){ /* intentionally empty for now */ }
+
   // Open external links in new tab and add rel for security; keep internal links as-is
   function initLinkTargets(){ els('a').forEach(function(a){ try{ if(a.hasAttribute('target')) return; var href = a.getAttribute('href'); if(!href) return; // skip anchors and javascript: mailto: etc
         var url = new URL(href, location.href);
