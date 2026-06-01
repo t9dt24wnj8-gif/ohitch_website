@@ -72,7 +72,8 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 }
 
 /* Make page links blue and underlined for readability */
-.page-content a{color:var(--accent);text-decoration:underline}
+.page-content a{color:var(--accent);text-decoration:none;opacity:0.85;transition:opacity 0.2s ease}
+.page-content a:hover{opacity:1;text-decoration:underline}
 
 /* Full-bleed hero used on Research and EP pages */
 .full-bleed-hero{width:100vw;margin-left:calc(50% - 50vw);background-size:cover;background-position:center;height:432px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-top:calc(var(--header-height,64px) * -1);padding-top:var(--header-height)}
