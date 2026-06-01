@@ -49,6 +49,8 @@ figure img{max-width:100%;height:auto;border-radius:0}
 /* Page content images smaller and centered */
 .page-content figure{display:block;text-align:center;margin:0.8rem auto}
 .page-content img{max-width:680px;width:100%;height:auto;margin:0 auto;display:block;border-radius:0}
+/* Utility: extra bottom spacing for paragraphs that need to push following media down */
+.page-content .extra-space{margin-bottom:3rem}
 figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;margin-top:0.4rem}
 
 /* Media rows: text + video/gif side-by-side on desktop, stacked on mobile */
@@ -119,7 +121,7 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 }
 
 /* Spacer above homepage main heading to nudge it down slightly */
-.home-hero-spacer{height:1.6rem}
+.home-hero-spacer{height:2.6rem}
 
 /* More vertical spacing before and after media on the homepage */
 .page-content.home figure,
@@ -156,7 +158,7 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 	}
 
 	/* mobile adjustment for the homepage spacer */
-	.home-hero-spacer{height:1.1rem}
+	.home-hero-spacer{height:1.6rem}
 
 	/* mobile nav link style: make buttons more clickable */
 	.main-nav a{display:block;padding:0.85rem 1rem;border-radius:8px;margin:0.25rem 0;color:var(--text);text-decoration:none;transition:transform .12s ease, background-color .12s ease}
@@ -175,9 +177,11 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 		-webkit-box-orient:vertical;
 		-webkit-line-clamp:2;
 		overflow:hidden;
-		font-size:1.1rem; /* baseline for two-line wrap */
-		line-height:1.05;
-		max-height:calc(2 * 1.05rem);
+		font-size:1.2rem; /* slightly larger baseline, allow wrap */
+		line-height:1.08;
+		max-width:88%;
+		margin:0 auto;
+		/* leave clamping to -webkit-line-clamp rather than max-height */
 		text-wrap:normal;
 	}
 
@@ -189,7 +193,11 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 	/* Restore larger video entry headings on EP archive */
 	.ep-video-archive .media-row .media-text h3{ margin-top: 0 !important; font-size:1.25rem; line-height:1.15; font-weight:600 }
 	.media-row .media-video{width:100%;flex:0 0 auto}
-	.container{padding:1.6rem}
+	.container{padding:0.8rem}
+
+	/* Reduce inner accordion paddings on mobile so combined left/right margins are smaller */
+	.accordion-content{padding:0 0.5rem}
+	.accordion-content.open{padding:0.5rem}
 
 	/* Ensure large GIFs are full-width on small screens */
 	#plasma-toroid figure img,
