@@ -25,7 +25,7 @@ body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe
 .main-nav a:hover{background:rgba(255,255,255,0.03);transform:translateY(-2px)}
 
 .intro{padding:2rem 0;color:var(--text)}
-article h1,article h2,article h3{margin:4rem 0 0.6rem;color:var(--text)}
+article h1,article h2,article h3{margin:2.5rem 0 0.6rem;color:var(--text)}
 figure{margin:1rem 0}
 figure img{max-width:100%;height:auto;border-radius:0}
 
