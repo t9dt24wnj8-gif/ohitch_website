@@ -91,117 +91,48 @@
         // remove thumbnail and button
         while(div.firstChild) div.removeChild(div.firstChild);
 
-        // create a holder (will be filled by the immediate iframe, and later upgraded)
-        var holder = document.createElement('div'); holder.id = uid; holder.style.width = '100%'; holder.style.height = '100%';
-
-        // immediate muted iframe — created synchronously in the user gesture to improve autoplay success on mobile
+        // create an immediate muted iframe with JS API enabled (no replacement)
         var iframe = document.createElement('iframe');
+        iframe.id = uid;
         iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; playsinline');
         iframe.setAttribute('allowfullscreen','');
         iframe.setAttribute('loading','eager');
-        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=1&origin=' + encodeURIComponent(location.origin);
         iframe.style.position = 'absolute'; iframe.style.left = '0'; iframe.style.top = '0'; iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.style.border = '0'; iframe.style.boxShadow = 'none';
-        holder.appendChild(iframe);
-        div.appendChild(holder);
+        // append first, then set src so the navigation/playback is more reliably associated with the user gesture
+        div.appendChild(iframe);
+        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
 
-        // prepare an "open on YouTube" button but don't show it immediately
-        var openBtn = document.createElement('a');
-        openBtn.className = 'yt-unmute';
-        openBtn.setAttribute('target','_blank');
-        openBtn.setAttribute('rel','noopener noreferrer');
-        openBtn.href = 'https://www.youtube.com/watch?v=' + id;
-        openBtn.textContent = 'open on youtube';
-        openBtn.style.display = 'none';
-        // show the open button only after a short delay if autoplay hasn't started
-        var showOpenBtnTimer = setTimeout(function(){ try{ openBtn.style.display = ''; if(!div.contains(openBtn)) div.appendChild(openBtn); }catch(e){} }, 1400);
+        // lightweight unmute control: reveal after a short delay so it doesn't overlay immediately
+        var unmuteBtn = document.createElement('button');
+        unmuteBtn.className = 'yt-unmute'; unmuteBtn.type = 'button'; unmuteBtn.textContent = 'unmute'; unmuteBtn.style.display = 'none';
+        div.appendChild(unmuteBtn);
+        var revealTimer = setTimeout(function(){ try{ unmuteBtn.style.display = ''; }catch(e){} }, 900);
 
-        // Attempt to upgrade to an API-controlled player when available
-        var upgradeToAPI = function(YT){
-          try{
-            if(!YT || !YT.Player) throw new Error('YT not available');
-            new YT.Player(uid, {
-              videoId: id,
-              playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1, origin: location.origin },
-              events: {
-                onReady: function(ev){
-                  try{
-                    // Cancel showing the open button if the API player is ready and playing
-                    try{ if(showOpenBtnTimer){ clearTimeout(showOpenBtnTimer); showOpenBtnTimer = null; } if(openBtn && openBtn.parentNode){ openBtn.parentNode.removeChild(openBtn); } }catch(e){}
-                    if(ev && ev.target && typeof ev.target.mute === 'function') ev.target.mute();
-                    ev.target.playVideo();
-                    // add an unobtrusive unmute button in case autoplay succeeds muted
-                    try{
-                      var container = document.getElementById(uid);
-                      if(container){
-                        var unmuteBtn = document.createElement('button');
-                        unmuteBtn.className = 'yt-unmute';
-                        unmuteBtn.type = 'button';
-                        unmuteBtn.textContent = 'unmute';
-                        container.appendChild(unmuteBtn);
-                        unmuteBtn.addEventListener('click', function(){ try{ if(ev && ev.target && typeof ev.target.unMute === 'function'){ ev.target.unMute(); } }catch(e){} unmuteBtn.remove(); });
-                      }
-                    }catch(e){}
-                    setTimeout(function(){ try{ if(ev && ev.target && typeof ev.target.unMute === 'function'){ ev.target.unMute(); } }catch(e){} }, 700);
-                  }catch(err){}
+        // When user explicitly requests unmute, attach a YT.Player to the existing iframe (user gesture)
+        var onUnmute = function(ev){
+          ev.preventDefault();
+          try{ if(revealTimer){ clearTimeout(revealTimer); revealTimer = null; } }catch(e){}
+          unmuteBtn.disabled = true;
+          loadYouTubeAPI().then(function(YT){
+            try{
+              var player = new YT.Player(uid, {
+                playerVars: { rel: 0, modestbranding: 1, playsinline: 1, origin: location.origin },
+                events: {
+                  onReady: function(apiEvent){
+                    try{ if(apiEvent && apiEvent.target && typeof apiEvent.target.unMute === 'function'){ apiEvent.target.unMute(); apiEvent.target.playVideo(); } }catch(err){}
+                    try{ if(unmuteBtn && unmuteBtn.parentNode){ unmuteBtn.parentNode.removeChild(unmuteBtn); } }catch(e){}
+                  }
                 }
-              }
-            });
-          }catch(err){
-            // If upgrade fails, keep the immediate iframe as-is (it already tries autoplay muted)
-            // ensure the open button will be shown (timer will handle it), no extra work here
-          }
+              });
+            }catch(err){ window.open('https://www.youtube.com/watch?v=' + id, '_blank', 'noopener,noreferrer'); }
+          }).catch(function(){ window.open('https://www.youtube.com/watch?v=' + id, '_blank', 'noopener,noreferrer'); });
+          unmuteBtn.removeEventListener('click', onUnmute);
         };
 
-        // start loading the API and attempt an upgrade; if unavailable, the open button timer will show it
-        if(window.YT && window.YT.Player){ try{ upgradeToAPI(window.YT); }catch(e){} }
-        loadYouTubeAPI().then(function(YT){ try{ upgradeToAPI(YT); }catch(e){} }).catch(function(){});
+        unmuteBtn.addEventListener('click', onUnmute);
 
-        div.removeEventListener('click', onClick);
       };
-
       div.addEventListener('click', onClick, { once: true });
-    }catch(e){ console.error(e); }
-  }
-
-  // Insert <wbr> before opening parentheses in homepage headings to allow breaks
-  function insertWbrBeforeParenOnHome(){
-    try{
-      var path = (location.pathname || '').replace(/\\/g,'/');
-      var isHome = path === '/' || path.endsWith('/index.html') || path === '';
-      if(!isHome) return;
-      var headings = document.querySelectorAll('.page-content.home h2, .page-content.home h3');
-      headings.forEach(function(h){
-        Array.from(h.childNodes).forEach(function(node){
-          if(node.nodeType === Node.TEXT_NODE && node.nodeValue && node.nodeValue.indexOf(' (') !== -1){
-            var parts = node.nodeValue.split(' (');
-            var frag = document.createDocumentFragment();
-            for(var i=0;i<parts.length;i++){
-              frag.appendChild(document.createTextNode(parts[i]));
-              if(i < parts.length - 1){ frag.appendChild(document.createElement('wbr')); frag.appendChild(document.createTextNode(' (')); }
-            }
-            h.replaceChild(frag, node);
-          }
-        });
-      });
-    }catch(e){}
-  }
-
-  function initYouTube(){ els('.youtube-player').forEach(function(d){ if(d && d.dataset && d.dataset.id) makeYouTube(d); }); }
-  
-  // Double homepage headings (except the hero H1 "Hello, I'm Ollie").
-  function adjustHomepageHeadings(){
-    try{
-      var path = (location.pathname || '').replace(/\\/g,'/');
-      var isHome = path === '/' || path.endsWith('/index.html') || path === '';
-      if(!isHome) return;
-      var nodes = document.querySelectorAll('.page-content h1, .page-content h2, .page-content h3, .hero-intro h1, .hero-intro h2, .hero-intro h3');
-      Array.from(nodes).forEach(function(h){
-        var txt = (h.textContent || '').trim().replace(/\s+/g,' ');
-        if(h.tagName.toLowerCase()==='h1' && txt === "Hello, I'm Ollie") return;
-        var cs = window.getComputedStyle(h);
-        var size = parseFloat(cs.fontSize);
-        if(!isNaN(size) && size>0){ h.style.fontSize = (size * 2) + 'px'; }
-      });
     }catch(e){ console.error(e); }
   }
 
