@@ -86,71 +86,59 @@
 
       var uid = 'yt-player-' + id + '-' + Math.floor(Math.random()*1000000);
 
-      var onClick = function(e){
-        e.preventDefault();
+      // Activation state: allow a quick retry if playback doesn't start
+      var _busy = false; var _played = false;
+      var _handler = function(e){
+        if(_busy) return; _busy = true; // mark attempt in-flight
+        // do not preventDefault - let the browser treat this as a gesture
         // remove thumbnail and button
         while(div.firstChild) div.removeChild(div.firstChild);
 
-        // Preferred path: if YT API is ready, instantiate a YT.Player immediately
-        // so the single user gesture (click) can start unmuted playback and
-        // request minimal controls (controls=0) to avoid overlays.
-        function createPlayerViaAPI(){
-          try{
-            var container = document.createElement('div');
-            container.id = uid;
-            container.style.position = 'absolute'; container.style.left = '0'; container.style.top = '0'; container.style.width = '100%'; container.style.height = '100%'; container.style.border = '0'; container.style.boxShadow = 'none';
-            div.appendChild(container);
+        // Create a direct iframe on the first user gesture so mobile browsers
+        // treat it as a user-initiated navigation and allow autoplay with sound.
+        var iframe = document.createElement('iframe');
+        iframe.id = uid;
+        iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; playsinline; autoplay');
+        iframe.setAttribute('allowfullscreen','');
+        iframe.setAttribute('loading','eager');
+        iframe.style.position = 'absolute'; iframe.style.left = '0'; iframe.style.top = '0'; iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.style.border = '0'; iframe.style.boxShadow = 'none';
+        // minimal UI parameters: controls=0, modestbranding and playsinline
+        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=0&enablejsapi=1&controls=0&iv_load_policy=3&origin=' + encodeURIComponent(location.origin);
+        div.appendChild(iframe);
 
-            var player = new YT.Player(uid, {
-              height: '100%', width: '100%', videoId: id,
-              playerVars: {
-                rel: 0,
-                modestbranding: 1,
-                playsinline: 1,
-                controls: 0,
-                iv_load_policy: 3,
-                disablekb: 1,
-                origin: location.origin,
-                autoplay: 1
-              },
-              events: {
-                onReady: function(ev){
-                  try{ if(ev && ev.target){ try{ ev.target.unMute && ev.target.unMute(); }catch(_){} try{ ev.target.playVideo && ev.target.playVideo(); }catch(_){} } }catch(err){}
-                },
-                onError: function(){ /* fallback handled below */ }
-              }
-            });
-            return true;
-          }catch(err){ return false; }
-        }
+        // Add an overlay to hide YouTube chrome until playback starts
+        var overlay = document.createElement('div');
+        overlay.className = 'yt-hide-overlay';
+        overlay.style.opacity = '1';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.zIndex = '9999';
+        div.appendChild(overlay);
 
-        function createIframeFallback(){
-          var iframe = document.createElement('iframe');
-          iframe.id = uid;
-          iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; playsinline');
-          iframe.setAttribute('allowfullscreen','');
-          iframe.setAttribute('loading','eager');
-          iframe.style.position = 'absolute'; iframe.style.left = '0'; iframe.style.top = '0'; iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.style.border = '0'; iframe.style.boxShadow = 'none';
-          div.appendChild(iframe);
-          // Use autoplay=1&mute=0 on user gesture so audio will play where allowed;
-          // also request minimal controls to hide overlays where possible.
-          iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=0&enablejsapi=1&controls=0&origin=' + encodeURIComponent(location.origin);
-        }
+        var removeOverlay = function(){ try{ overlay.style.opacity = '0'; setTimeout(function(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 320); _played = true; }catch(e){} };
 
-        if(window.YT && window.YT.Player){
-          var ok = createPlayerViaAPI();
-          if(!ok){ createIframeFallback(); }
-        } else {
-          // API not present: attempt to load (was preloaded in onReady) but fall back
-          // to a direct iframe with sound (user gesture) if API boot isn't fast enough.
-          try{
-            // try to create player if/when API loads quickly
-            if(window.YT && window.YT.Player){ if(!createPlayerViaAPI()) createIframeFallback(); }
-            else { createIframeFallback(); }
-          }catch(e){ createIframeFallback(); }
-        }
+        // Wait longer before removing overlay (up to 2500ms) to avoid revealing youtube chrome
+        var fallbackTimer = setTimeout(function(){ if(!_played){ _busy = false; } removeOverlay(); }, 2500);
+
+        // Try to attach YT.Player to detect playing state and remove overlay earlier
+        setTimeout(function(){
+          if(window.YT && window.YT.Player){
+            try{
+              var ap = new YT.Player(uid, {
+                playerVars: { rel:0, modestbranding:1, playsinline:1, controls:0, iv_load_policy:3, disablekb:1, origin:location.origin },
+                events: {
+                  onReady: function(ev){ try{ clearTimeout(fallbackTimer); _played = true; removeOverlay(); }catch(e){} },
+                  onStateChange: function(ev){ try{ if(ev && ev.data === 1){ clearTimeout(fallbackTimer); _played = true; removeOverlay(); } }catch(e){} }
+                }
+              });
+            }catch(e){ /* ignore and let fallback remove overlay */ }
+          }
+        }, 300);
       };
-      div.addEventListener('click', onClick, { once: true });
+
+      // Prefer pointerdown/touchstart for the first gesture, fall back to click
+      if('onpointerdown' in window){ div.addEventListener('pointerdown', _handler, { passive: true }); }
+      else if('ontouchstart' in window){ div.addEventListener('touchstart', _handler, { passive: true }); }
+      else { div.addEventListener('click', _handler); }
     }catch(e){ console.error(e); }
   }
 
