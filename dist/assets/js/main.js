@@ -55,7 +55,24 @@
     }); btn.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); btn.click(); } }); }); }
 
   // YouTube lazy players (create iframe only on click)
-  function makeYouTube(div){ try{ var id = div.dataset.id; if(!id) return; var thumb = 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg'; var img = document.createElement('img'); img.src = thumb; img.alt = div.dataset.title || 'YouTube thumbnail'; div.appendChild(img); var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video'); btn.type = 'button'; div.appendChild(btn); div.addEventListener('click', function(){ var iframe = document.createElement('iframe'); iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'); iframe.setAttribute('allowfullscreen',''); iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1'; iframe.style.width = '100%'; var width = div.clientWidth || 560; iframe.style.height = Math.round(width * 9 / 16) + 'px'; iframe.style.border = '0'; iframe.style.boxShadow = 'none'; while(div.firstChild) div.removeChild(div.firstChild); div.appendChild(iframe); }, { once: true }); }catch(e){ console.error(e); } }
+  function makeYouTube(div){ try{ var id = div.dataset.id; if(!id) return; var thumb = 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg'; var img = document.createElement('img'); img.src = thumb; img.alt = div.dataset.title || 'YouTube thumbnail'; div.appendChild(img); var btn = document.createElement('button'); btn.className = 'play'; btn.setAttribute('aria-label','Play video'); btn.type = 'button'; div.appendChild(btn);
+    // ensure the container has an explicit aspect-ratio box so replacement iframes keep size
+    div.style.position = 'relative'; div.style.paddingTop = div.style.paddingTop || (function(){ var ar = 9/16; return (ar * 100) + '%'; })();
+    div.addEventListener('click', function(){
+      // replace with an iframe immediately, ensuring width/height set via CSS
+      while(div.firstChild) div.removeChild(div.firstChild);
+      var iframe = document.createElement('iframe');
+      iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; playsinline');
+      iframe.setAttribute('allowfullscreen','');
+      iframe.setAttribute('loading','lazy');
+      // force playsinline and mute for mobile autoplay attempts
+      iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=1&origin=' + encodeURIComponent(location.origin);
+      iframe.style.position = 'absolute'; iframe.style.left = '0'; iframe.style.top = '0'; iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.style.border = '0'; iframe.style.boxShadow = 'none';
+      div.appendChild(iframe);
+      // add an open-on-youtube button for users to play with sound if autoplay fails
+      var openBtn = document.createElement('a'); openBtn.className = 'yt-unmute'; openBtn.setAttribute('target','_blank'); openBtn.setAttribute('rel','noopener noreferrer'); openBtn.href = 'https://www.youtube.com/watch?v=' + id; openBtn.textContent = 'open on youtube';
+      div.appendChild(openBtn);
+    }, { once: true }); }catch(e){ console.error(e); } }
 
   // Load YouTube IFrame API once and return a promise that resolves with window.YT
   function loadYouTubeAPI(){
@@ -88,13 +105,28 @@
 
       var onClick = function(e){
         e.preventDefault();
-        // clear thumbnail and button
+        // remove thumbnail and button
         while(div.firstChild) div.removeChild(div.firstChild);
+
+        // create a holder (will be filled by the immediate iframe, and later upgraded)
         var holder = document.createElement('div'); holder.id = uid; holder.style.width = '100%'; holder.style.height = '100%';
-        holder.style.position = 'relative';
+
+        // immediate muted iframe — created synchronously in the user gesture to improve autoplay success on mobile
+        var iframe = document.createElement('iframe');
+        iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; playsinline');
+        iframe.setAttribute('allowfullscreen','');
+        iframe.setAttribute('loading','eager');
+        iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=1&origin=' + encodeURIComponent(location.origin);
+        iframe.style.position = 'absolute'; iframe.style.left = '0'; iframe.style.top = '0'; iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.style.border = '0'; iframe.style.boxShadow = 'none';
+        holder.appendChild(iframe);
         div.appendChild(holder);
 
-        var createPlayer = function(YT){
+        // add an open-on-youtube button for users to open with sound if autoplay fails
+        var openBtn = document.createElement('a'); openBtn.className = 'yt-unmute'; openBtn.setAttribute('target','_blank'); openBtn.setAttribute('rel','noopener noreferrer'); openBtn.href = 'https://www.youtube.com/watch?v=' + id; openBtn.textContent = 'open on youtube';
+        div.appendChild(openBtn);
+
+        // Attempt to upgrade to an API-controlled player when available
+        var upgradeToAPI = function(YT){
           try{
             if(!YT || !YT.Player) throw new Error('YT not available');
             new YT.Player(uid, {
@@ -103,12 +135,8 @@
               events: {
                 onReady: function(ev){
                   try{
-                    // muted-autoplay fallback: mute, play, then attempt to unmute shortly after
-                    if(ev && ev.target && typeof ev.target.mute === 'function'){
-                      ev.target.mute();
-                    }
+                    if(ev && ev.target && typeof ev.target.mute === 'function') ev.target.mute();
                     ev.target.playVideo();
-
                     // add an unobtrusive unmute button in case autoplay succeeds muted
                     try{
                       var container = document.getElementById(uid);
@@ -116,34 +144,23 @@
                         var unmuteBtn = document.createElement('button');
                         unmuteBtn.className = 'yt-unmute';
                         unmuteBtn.type = 'button';
-                        unmuteBtn.textContent = 'Unmute';
+                        unmuteBtn.textContent = 'unmute';
                         container.appendChild(unmuteBtn);
                         unmuteBtn.addEventListener('click', function(){ try{ if(ev && ev.target && typeof ev.target.unMute === 'function'){ ev.target.unMute(); } }catch(e){} unmuteBtn.remove(); });
                       }
                     }catch(e){}
-
                     setTimeout(function(){ try{ if(ev && ev.target && typeof ev.target.unMute === 'function'){ ev.target.unMute(); } }catch(e){} }, 700);
                   }catch(err){}
                 }
               }
             });
           }catch(err){
-            // Fallback: plain iframe with autoplay muted; add an open-on-youtube button so user can open with sound
-            var iframe = document.createElement('iframe');
-            iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
-            iframe.setAttribute('allowfullscreen','');
-            iframe.setAttribute('loading','lazy');
-            iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=1&origin=' + encodeURIComponent(location.origin);
-            while(div.firstChild) div.removeChild(div.firstChild);
-            var wrap = document.createElement('div'); wrap.style.position = 'relative'; wrap.appendChild(iframe);
-            var openBtn = document.createElement('a'); openBtn.className = 'yt-unmute'; openBtn.setAttribute('target','_blank'); openBtn.setAttribute('rel','noopener noreferrer'); openBtn.href = 'https://www.youtube.com/watch?v=' + id; openBtn.textContent = 'Open on YouTube';
-            wrap.appendChild(openBtn);
-            div.appendChild(wrap);
+            // If upgrade fails, keep the immediate iframe as-is (it already tries autoplay muted)
           }
         };
 
-        if(window.YT && window.YT.Player){ createPlayer(window.YT); }
-        else { loadYouTubeAPI().then(function(YT){ if(YT && YT.Player) createPlayer(YT); else createPlayer(null); }).catch(function(){ createPlayer(null); }); }
+        if(window.YT && window.YT.Player){ upgradeToAPI(window.YT); }
+        else { loadYouTubeAPI().then(function(YT){ upgradeToAPI(YT); }).catch(function(){}); }
 
         div.removeEventListener('click', onClick);
       };
@@ -201,7 +218,34 @@
       }catch(e){ /* ignore malformed or non-http URLs */ }
     }); }
 
-  function onReady(){ setHeaderHeightVar(); initNavToggle(); initAccordions(); initYouTube(); initLinkTargets(); window.addEventListener('resize', debounce(setHeaderHeightVar, 120)); window.addEventListener('resize', function(){ els('.accordion-content.open').forEach(function(c){ c.style.maxHeight = c.scrollHeight + 'px'; }); }); }
+  // Normalize and reorder media links in EP archive entries at runtime
+  function normalizeMediaLinks(){
+    try{
+      els('.media-text .small-italic').forEach(function(p){
+        var anchors = Array.from(p.querySelectorAll('a'));
+        if(!anchors.length) return;
+        // If this paragraph contains other non-whitespace text nodes, skip to avoid altering propellant lines
+        var otherText = Array.from(p.childNodes).some(function(n){ return n.nodeType === Node.TEXT_NODE && n.textContent && n.textContent.trim(); });
+        if(otherText && anchors.length < 2) return;
+
+        var buckets = { thruster:[], more:[], video:[], other:[] };
+        anchors.forEach(function(a){
+          var txt = (a.textContent || '').trim();
+          var norm = txt.toLowerCase();
+          if(norm.indexOf('thruster') !== -1) buckets.thruster.push(a);
+          else if(norm.indexOf('more') !== -1 || norm.indexOf('info') !== -1) buckets.more.push(a);
+          else if(norm.indexOf('video') !== -1 || norm.indexOf('source') !== -1) buckets.video.push(a);
+          else buckets.other.push(a);
+        });
+
+        var seen = new Set(); var parts = [];
+        ['thruster','more','video','other'].forEach(function(k){ buckets[k].forEach(function(a){ var href = a.getAttribute('href') || ''; var key = k + '|' + href; if(seen.has(key)) return; seen.add(key); a.textContent = (a.textContent||'').trim().toLowerCase(); parts.push(a.outerHTML); }); });
+        if(parts.length) p.innerHTML = parts.join(' • ');
+      });
+    }catch(e){}
+  }
+
+  function onReady(){ setHeaderHeightVar(); initNavToggle(); initAccordions(); normalizeMediaLinks(); initYouTube(); initLinkTargets(); window.addEventListener('resize', debounce(setHeaderHeightVar, 120)); window.addEventListener('resize', function(){ els('.accordion-content.open').forEach(function(c){ c.style.maxHeight = c.scrollHeight + 'px'; }); }); }
   
   // call homepage heading adjuster after other inits
   function onReadyWithAdjust(){ onReady(); adjustHomepageHeadings(); }
