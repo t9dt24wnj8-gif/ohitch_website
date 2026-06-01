@@ -91,6 +91,7 @@
         // clear thumbnail and button
         while(div.firstChild) div.removeChild(div.firstChild);
         var holder = document.createElement('div'); holder.id = uid; holder.style.width = '100%'; holder.style.height = '100%';
+        holder.style.position = 'relative';
         div.appendChild(holder);
 
         var createPlayer = function(YT){
@@ -102,25 +103,42 @@
               events: {
                 onReady: function(ev){
                   try{
-                    // muted-autoplay fallback: mute, play, then unmute shortly after
+                    // muted-autoplay fallback: mute, play, then attempt to unmute shortly after
                     if(ev && ev.target && typeof ev.target.mute === 'function'){
                       ev.target.mute();
                     }
                     ev.target.playVideo();
+
+                    // add an unobtrusive unmute button in case autoplay succeeds muted
+                    try{
+                      var container = document.getElementById(uid);
+                      if(container){
+                        var unmuteBtn = document.createElement('button');
+                        unmuteBtn.className = 'yt-unmute';
+                        unmuteBtn.type = 'button';
+                        unmuteBtn.textContent = 'Unmute';
+                        container.appendChild(unmuteBtn);
+                        unmuteBtn.addEventListener('click', function(){ try{ if(ev && ev.target && typeof ev.target.unMute === 'function'){ ev.target.unMute(); } }catch(e){} unmuteBtn.remove(); });
+                      }
+                    }catch(e){}
+
                     setTimeout(function(){ try{ if(ev && ev.target && typeof ev.target.unMute === 'function'){ ev.target.unMute(); } }catch(e){} }, 700);
                   }catch(err){}
                 }
               }
             });
           }catch(err){
-            // Fallback: plain iframe with autoplay
+            // Fallback: plain iframe with autoplay muted; add an open-on-youtube button so user can open with sound
             var iframe = document.createElement('iframe');
             iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
             iframe.setAttribute('allowfullscreen','');
             iframe.setAttribute('loading','lazy');
             iframe.src = 'https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1&playsinline=1&mute=1&origin=' + encodeURIComponent(location.origin);
             while(div.firstChild) div.removeChild(div.firstChild);
-            div.appendChild(iframe);
+            var wrap = document.createElement('div'); wrap.style.position = 'relative'; wrap.appendChild(iframe);
+            var openBtn = document.createElement('a'); openBtn.className = 'yt-unmute'; openBtn.setAttribute('target','_blank'); openBtn.setAttribute('rel','noopener noreferrer'); openBtn.href = 'https://www.youtube.com/watch?v=' + id; openBtn.textContent = 'Open on YouTube';
+            wrap.appendChild(openBtn);
+            div.appendChild(wrap);
           }
         };
 
@@ -132,6 +150,29 @@
 
       div.addEventListener('click', onClick, { once: true });
     }catch(e){ console.error(e); }
+  }
+
+  // Insert <wbr> before opening parentheses in homepage headings to allow breaks
+  function insertWbrBeforeParenOnHome(){
+    try{
+      var path = (location.pathname || '').replace(/\\/g,'/');
+      var isHome = path === '/' || path.endsWith('/index.html') || path === '';
+      if(!isHome) return;
+      var headings = document.querySelectorAll('.page-content.home h2, .page-content.home h3');
+      headings.forEach(function(h){
+        Array.from(h.childNodes).forEach(function(node){
+          if(node.nodeType === Node.TEXT_NODE && node.nodeValue && node.nodeValue.indexOf(' (') !== -1){
+            var parts = node.nodeValue.split(' (');
+            var frag = document.createDocumentFragment();
+            for(var i=0;i<parts.length;i++){
+              frag.appendChild(document.createTextNode(parts[i]));
+              if(i < parts.length - 1){ frag.appendChild(document.createElement('wbr')); frag.appendChild(document.createTextNode(' (')); }
+            }
+            h.replaceChild(frag, node);
+          }
+        });
+      });
+    }catch(e){}
   }
 
   function initYouTube(){ els('.youtube-player').forEach(function(d){ if(d && d.dataset && d.dataset.id) makeYouTube(d); }); }
@@ -164,7 +205,8 @@
   
   // call homepage heading adjuster after other inits
   function onReadyWithAdjust(){ onReady(); adjustHomepageHeadings(); }
+  function onReadyAndWrap(){ onReady(); adjustHomepageHeadings(); insertWbrBeforeParenOnHome(); }
 
-  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', onReadyWithAdjust); } else { onReadyWithAdjust(); }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', onReadyAndWrap); } else { onReadyAndWrap(); }
 
 })();
