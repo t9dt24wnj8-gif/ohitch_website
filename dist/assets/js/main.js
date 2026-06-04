@@ -136,9 +136,19 @@
       };
 
       // Prefer pointerdown/touchstart for the first gesture, fall back to click
-      if('onpointerdown' in window){ div.addEventListener('pointerdown', _handler, { passive: true }); }
-      else if('ontouchstart' in window){ div.addEventListener('touchstart', _handler, { passive: true }); }
-      else { div.addEventListener('click', _handler); }
+      if('onpointerdown' in window){
+        var _sx,_sy,_moved;
+        div.addEventListener('pointerdown',function(e){_sx=e.clientX;_sy=e.clientY;_moved=false;},{passive:true});
+        div.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-_sx)>10||Math.abs(e.clientY-_sy)>10)_moved=true;},{passive:true});
+        div.addEventListener('pointerup',function(e){if(!_moved)_handler(e);},{passive:true});
+      }
+      else if('ontouchstart' in window){
+        var _tsx,_tsy,_tmoved;
+        div.addEventListener('touchstart',function(e){_tsx=e.touches[0].clientX;_tsy=e.touches[0].clientY;_tmoved=false;},{passive:true});
+        div.addEventListener('touchmove',function(e){if(Math.abs(e.touches[0].clientX-_tsx)>10||Math.abs(e.touches[0].clientY-_tsy)>10)_tmoved=true;},{passive:true});
+        div.addEventListener('touchend',function(e){if(!_tmoved)_handler(e);},{passive:true});
+      }
+      else { div.addEventListener('click',_handler); }
     }catch(e){ console.error(e); }
   }
 
