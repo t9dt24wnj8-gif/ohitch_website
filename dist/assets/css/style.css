@@ -13,7 +13,7 @@ body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe
 .container{max-width:1400px;margin:0 auto;padding:2.5rem}
 .site-header{position:sticky;top:0;z-index:50;border-bottom:none;background:transparent;overflow:visible;padding-top:env(safe-area-inset-top)}
 .site-header::before{content:"";position:absolute;left:0;right:0;top:0;bottom:-6px;background:rgba(15,15,15,0.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);pointer-events:none}
-.header-inner{display:flex;align-items:center;gap:0.75rem;padding:0.45rem 0.8rem;position:relative;z-index:1}
+.header-inner{display:flex;align-items:center;gap:0.75rem;padding:0.25rem 0.8rem;position:relative;z-index:1}
 .brand{display:flex;align-items:center;gap:0.6rem;text-decoration:none;color:inherit;flex-shrink:0;position:relative}
 .logo{width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));z-index:2;position:relative}
 .name{font-weight:300;color:var(--text);font-size:2.2rem;margin-left:-0.4rem;position:relative;z-index:1}
@@ -228,7 +228,7 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 	.page-content.home .youtube-player{margin-top:1.2rem;margin-bottom:1.2rem}
 
 	/* Reduce header vertical padding by ~30% on mobile */
-	.header-inner{padding:0.32rem 0.8rem}
+	.header-inner{padding:0.2rem 0.8rem}
 
 	/* Compact hero: reduce research & ep hero height by 20% on mobile */
 	.full-bleed-hero.compact-hero{height:calc(432px * 0.8);}
@@ -243,7 +243,7 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 	.page-content .extra-space{margin-bottom:3rem}
 
 
-@media(min-width:720px){.header-inner{padding:0.6rem 0.8rem}.main-nav a{padding:8px 10px}}
+@media(min-width:720px){.header-inner{padding:0.35rem 0.8rem}.main-nav a{padding:8px 10px}}
 
 @media(min-width:720px){
 	/* Align each media heading with the top of its video on desktop for ep-video-archive */
