@@ -153,7 +153,7 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 
 @media(max-width:720px){
     	.nav-toggle{display:inline-flex;margin-left:auto}
-    	.main-nav{position:absolute;right:1rem;top:var(--header-height);background:#050505;flex-direction:column;padding:0.4rem;border-radius:8px;width:calc(100% - 2rem);max-width:320px;box-shadow:0 8px 30px rgba(0,0,0,0.6);max-height:0;overflow:hidden;opacity:0;transform-origin:top center;transition:max-height .32s cubic-bezier(0.22,0.0,0.2,1),opacity .22s ease,transform .28s ease}
+    	.main-nav{position:absolute;right:1rem;top:var(--header-height);background:rgba(15,15,15,0.75);border:1px solid rgba(255,255,255,0.07);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);flex-direction:column;padding:0.4rem;border-radius:16px;width:calc(100% - 2rem);max-width:320px;box-shadow:0 8px 30px rgba(0,0,0,0.6);max-height:0;overflow:hidden;opacity:0;transform-origin:top center;transition:max-height .32s cubic-bezier(0.22,0.0,0.2,1),opacity .22s ease,transform .28s ease}
     	.main-nav.open{max-height:640px;opacity:1}
 	.hero-intro{flex-direction:column}
 	.hero-intro .hero-image{max-width:100%;flex:0 0 auto}
