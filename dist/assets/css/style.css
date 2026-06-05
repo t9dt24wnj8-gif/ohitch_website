@@ -153,8 +153,8 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 
 @media(max-width:720px){
     	.nav-toggle{display:inline-flex;margin-left:auto}
-    	.main-nav{position:static;flex-basis:100%;width:100%;max-width:none;flex-direction:column;padding:0 0.4rem 0.4rem;background:transparent;box-shadow:none;border-radius:0;border-top:1px solid transparent;max-height:0;overflow:hidden;opacity:0;transition:max-height .32s cubic-bezier(0.22,0.0,0.2,1),opacity .22s ease}
-    	.main-nav.open{max-height:640px;opacity:1;border-top-color:rgba(255,255,255,0.07)}
+    	.main-nav{position:static;flex-basis:100%;width:100%;max-width:none;flex-direction:column;padding:0 0.4rem 0.4rem;background:transparent;box-shadow:none;border-radius:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .32s cubic-bezier(0.22,0.0,0.2,1),opacity .22s ease}
+    	.main-nav.open{max-height:640px;opacity:1;border-top:1px solid rgba(255,255,255,0.07);padding-top:0.5rem}
 	.hero-intro{flex-direction:column}
 	.hero-intro .hero-image{max-width:100%;flex:0 0 auto}
 	.media-row{flex-direction:column}
@@ -228,7 +228,7 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 	.page-content.home .youtube-player{margin-top:1.2rem;margin-bottom:1.2rem}
 
 	/* Reduce header vertical padding by ~30% on mobile */
-	.header-inner{padding:0.2rem 0.8rem;flex-wrap:wrap}
+	.header-inner{padding:0.2rem 0.8rem;flex-wrap:wrap;gap:0 0.75rem}
 
 	/* Compact hero: reduce research & ep hero height by 20% on mobile */
 	.full-bleed-hero.compact-hero{height:calc(432px * 0.8);}
