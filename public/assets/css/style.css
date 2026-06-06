@@ -20,7 +20,7 @@ body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe
     backdrop-filter:blur(10px);
     -webkit-backdrop-filter:blur(10px);
 
-    overflow:hidden;
+    overflow:visible;
 
     transition:max-height 0.35s cubic-bezier(0.22,0.0,0.2,1);
 }
@@ -166,27 +166,29 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 /* -------------------------- */
 
 @media(max-width:720px){
-    	.nav-toggle{display:inline-flex;margin-left:auto}
-    	.main-nav{
-			display:flex;
-			flex-direction:column;
-			
-			flex-basis:100%;
-    		width:100%;
+	.nav-toggle{display:inline-flex;margin-left:auto}
+	.main-nav{
+		display:flex;
+		flex-direction:column;
 
-			max-height:0;
-			overflow:hidden;
-			opacity:0;
+		order: 3;
+		
+		flex-basis:100%;
+		width:100%;
 
-			background:transparent;
+		max-height:0;
+		overflow:hidden;
+		opacity:0;
 
-			transition:max-height .32s cubic-bezier(0.22,0.0,0.2,1), opacity .22s ease;
-		}
-    	.main-nav.open{
-			max-height:500px;
-			opacity:1;
-			padding-top:0.5rem;
-		}
+		background:transparent;
+
+		transition:max-height .32s cubic-bezier(0.22,0.0,0.2,1), opacity .22s ease;
+	}
+	.main-nav.open{
+		max-height:500px;
+		opacity:1;
+		padding-top:0.5rem;
+	}
 	.hero-intro{flex-direction:column}
 	.hero-intro .hero-image{max-width:100%;flex:0 0 auto}
 	.media-row{flex-direction:column}
