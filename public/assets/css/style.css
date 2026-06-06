@@ -165,10 +165,8 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 			width:100%;
 			padding:0 0.4rem 0.4rem;
 
-			background:rgba(15,15,15,0.85);
+			background:rgba(15,15,15,0.75);
 			backdrop-filter:blur(10px);
-
-			border-top:1px solid rgba(255,255,255,0.07);
 
 			max-height:0;
 			overflow:hidden;
@@ -251,20 +249,22 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 
 	/* Reduce header vertical padding by ~30% on mobile */
 .header-inner{
-    padding:0.15rem 0.8rem;
-    flex-wrap:nowrap;
-    gap:0 0.75rem;
+    padding:0.5rem 0.8rem 0.8rem;
+    display:flex;
     align-items:center;
+    justify-content:space-between;
+    flex-wrap:nowrap;
+	gap:0 0.75rem;
 }
 
 .name{
-    font-size:1.6rem;
+    font-size:2.2rem;
     line-height:1;
 }
 
 .logo{
-    width:28px;
-    height:28px;
+    width:32px;
+    height:32px;
 }
 
 	/* Compact hero: reduce research & ep hero height by 20% on mobile */
@@ -278,15 +278,6 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 
 	/* Extra spacing utility for specific paragraphs on the homepage */
 	.page-content .extra-space{margin-bottom:3rem}
-
-
-.header-inner{
-    padding:0.15rem 0.8rem;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:nowrap;
-}
 
 @media(min-width:720px){
 	/* Align each media heading with the top of its video on desktop for ep-video-archive */
@@ -302,17 +293,6 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 
 .break-mobile { display: none; }        /* hides it on desktop */
 @media (max-width: 768px) {.break-mobile { display: block; }}     /* shows it on mobile */
-
-.site-header::after{
-    content:"";
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:0;
-    height:1px;
-    background:rgba(255,255,255,0.07);
-    z-index:2;
-}
 
 .nav-toggle{
     align-self:center;
