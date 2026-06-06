@@ -11,8 +11,19 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;color:var(--text);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 .container{max-width:1400px;margin:0 auto;padding:2.5rem}
-.site-header{position:sticky;top:0;z-index:50;border-bottom:none;background:transparent;overflow:visible;padding-top:env(safe-area-inset-top)}
-.site-header::before{content:"";position:absolute;left:0;right:0;top:0;bottom:-6px;background:rgba(15,15,15,0.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);pointer-events:none}
+.site-header{
+    position:sticky;
+    top:0;
+    z-index:50;
+
+    background:rgba(15,15,15,0.75);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+
+    overflow:hidden;
+
+    transition:max-height 0.35s cubic-bezier(0.22,0.0,0.2,1);
+}
 .header-inner{display:flex;align-items:center;gap:0.75rem;padding:0.25rem 0.8rem;position:relative;z-index:1}
 .brand{display:flex;align-items:center;gap:0.6rem;text-decoration:none;color:inherit;flex-shrink:0;position:relative}
 .logo{width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));z-index:2;position:relative}
@@ -150,42 +161,39 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 /* For side-by-side, avoid double spacing on each child */
 #gauss ~ section .side-by-side figure{margin-top:0}
 
+/* -------------------------- */
+/* BEGINNING OF MOBILE STYLES */
+/* -------------------------- */
 
 @media(max-width:720px){
     	.nav-toggle{display:inline-flex;margin-left:auto}
     	.main-nav{
-			position:absolute;
-			top:100%;
-			left:0;
-			right:0;
-
 			display:flex;
 			flex-direction:column;
-
-			width:100%;
-			padding:0 0.4rem 0.4rem;
-
-			background:rgba(15,15,15,0.75);
-			backdrop-filter:blur(10px);
+			
+			flex-basis:100%;
+    		width:100%;
 
 			max-height:0;
 			overflow:hidden;
 			opacity:0;
 
+			background:transparent;
+
 			transition:max-height .32s cubic-bezier(0.22,0.0,0.2,1), opacity .22s ease;
 		}
-    	.main-nav.open{max-height:640px;opacity:1;padding-top:0.5rem;}
+    	.main-nav.open{
+			max-height:500px;
+			opacity:1;
+			padding-top:0.5rem;
+		}
 	.hero-intro{flex-direction:column}
 	.hero-intro .hero-image{max-width:100%;flex:0 0 auto}
 	.media-row{flex-direction:column}
 
-	/* Keep header sticky on small screens (reverted from forced fixed to avoid layout issues) */
-	.site-header{position:sticky;top:0}
 	/* Body padding is applied dynamically by JS when header becomes fixed (not used for sticky) */
 	/* Mobile header blur: reduce downward bleed and extend blur upward into the safe-area so content above the header is obscured */
-	.site-header::before{top:-32px;bottom:0px;background:rgba(15,15,15,0.75)}
 	@supports (top: calc(-1 * env(safe-area-inset-top))){
-		.site-header::before{top:calc(-1 * env(safe-area-inset-top));}
 	}
 
 	/* mobile adjustment for the homepage spacer */
@@ -248,24 +256,32 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 	.page-content.home .youtube-player{margin-top:1.2rem;margin-bottom:1.2rem}
 
 	/* Reduce header vertical padding by ~30% on mobile */
-.header-inner{
-    padding:0.5rem 0.8rem 0.8rem;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:nowrap;
-	gap:0 0.75rem;
-}
+	.header-inner{
+		padding:0.5rem 0.8rem 0.8rem;
+		display:flex;
+		align-items:center;
+		justify-content:space-between;
+		flex-wrap:wrap;
+		gap:0 0.75rem;
+	}
 
-.name{
-    font-size:2.2rem;
-    line-height:1;
-}
+	.brand{
+		order:1;
+	}
 
-.logo{
-    width:32px;
-    height:32px;
-}
+	.nav-toggle{
+		order:2;
+	}
+
+	.name{
+		font-size:2.2rem;
+		line-height:1;
+	}
+
+	.logo{
+		width:32px;
+		height:32px;
+	}
 
 	/* Compact hero: reduce research & ep hero height by 20% on mobile */
 	.full-bleed-hero.compact-hero{height:calc(432px * 0.8);}
@@ -278,6 +294,16 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 
 	/* Extra spacing utility for specific paragraphs on the homepage */
 	.page-content .extra-space{margin-bottom:3rem}
+
+	.site-header.open{
+    max-height:500px; /* adjust if menu grows */
+	}
+
+}
+
+/* -------------------- */
+/* END OF MOBILE STYLES */
+/* -------------------- */
 
 @media(min-width:720px){
 	/* Align each media heading with the top of its video on desktop for ep-video-archive */
@@ -293,7 +319,3 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 
 .break-mobile { display: none; }        /* hides it on desktop */
 @media (max-width: 768px) {.break-mobile { display: block; }}     /* shows it on mobile */
-
-.nav-toggle{
-    align-self:center;
-}
