@@ -1,12 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
+import headerImage from '../assets/images/header.jpg'
+
 const title = 'Research — Oliver Hitchens'
 const description = 'Research publications and thesis — Oliver Hitchens.'
 ---
 
 <BaseLayout title={title} description={description}>
   <!-- Full-bleed hero -->
-  <div class="full-bleed-hero compact-hero" style="background-image:url('/assets/images/header.jpg');">
+  <div
+    class="full-bleed-hero compact-hero"
+    style={`background-image: url(${headerImage.src});`}
+  >
     <h1 style="color:#fff;font-size:clamp(2.4rem,5vw,4.2rem);margin:0;text-align:center;">Research Publications</h1>
   </div>
 

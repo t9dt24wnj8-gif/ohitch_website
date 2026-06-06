@@ -1,13 +1,51 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
+
+import spt70Hero from '../assets/images/SPT-70_EKB_Fakel.png'
+import gaussSection from '../assets/images/gauss.png'
+import ritSection from '../assets/images/rit.png'
+import xjetSection from '../assets/images/xjet.png'
+import acftSection from '../assets/images/acft.png'
+
+import gaussVideoMobile from '../assets/videos/GAUSS_mobile.mp4'
+import gaussVideoDesktop from '../assets/videos/GAUSS_desktop.mp4'
+
 const title = 'EP Video Archive — Oliver Hitchens'
 const description = 'An archive of electric propulsion hot-fire videos and on-orbit firings.'
 ---
 
 <BaseLayout title={title} description={description}>
 
-  <div class="full-bleed-hero compact-hero" style="background-image:url('/assets/images/GAUSS.gif');">
-    <h1 style="color:#fff;font-size:clamp(2.4rem,5vw,4.2rem);margin:0;text-align:center;text-shadow:0 8px 30px rgba(0,0,0,0.6)">Electric Propulsion Video Archive</h1>
+  <div class="full-bleed-hero compact-hero gauss-hero">
+    <video
+      id="gauss-boomerang"
+      autoplay
+      muted
+      playsinline
+      preload="metadata"
+      loop
+    >
+      <source id="gauss-source" src={gaussVideoDesktop} type="video/mp4" />
+    </video>
+
+    <script type="module">
+      const video = document.getElementById('gauss-boomerang');
+      const source = document.getElementById('gauss-source');
+
+      const mobileSrc = ${gaussVideoMobile};
+      const desktopSrc = ${gaussVideoDesktop};
+
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+      source.src = isMobile ? mobileSrc : desktopSrc;
+
+      video.load();
+      video.play().catch(() => {});
+    </script>
+
+    <h1 style="color:#fff;font-size:clamp(2.4rem,5vw,4.2rem);margin:0;text-align:center;text-shadow:0 8px 30px rgba(0,0,0,0.6)">
+      Electric Propulsion Video Archive
+    </h1>
   </div>
 
   <main class="container page-content ep-video-archive">
@@ -22,7 +60,7 @@ const description = 'An archive of electric propulsion hot-fire videos and on-or
       <!-- IN-SPACE HOT FIRES -->
       <div class="accordion">
         <button class="accordion-toggle" aria-expanded="false">
-          <div class="section-hero" style="background-image:url('/assets/images/SPT-70%20_EKB_Fakel.png')">
+          <div class="section-hero" style={`background-image: url(${spt70Hero.src})`}>
               <h2>IN-SPACE <span class="break-mobile"></span>HOT FIRES</h2>
             </div>
         </button>
@@ -73,7 +111,7 @@ const description = 'An archive of electric propulsion hot-fire videos and on-or
       <!-- HALL EFFECT THRUSTERS -->
       <div class="accordion">
         <button class="accordion-toggle" aria-expanded="false">
-          <div class="section-hero" style="background-image:url('/assets/images/gauss.png')">
+          <div class="section-hero" style={`background-image: url(${gaussSection.src})`}>
             <h2>HALL EFFECT <span class="break-mobile"></span>THRUSTERS</h2>
           </div>
         </button>
@@ -243,7 +281,7 @@ const description = 'An archive of electric propulsion hot-fire videos and on-or
       <!-- GRIDDED ION THRUSTERS -->
       <div class="accordion">
         <button class="accordion-toggle" aria-expanded="false">
-          <div class="section-hero" style="background-image:url('/assets/images/rit.png')">
+          <div class="section-hero" style={`background-image: url(${ritSection.src})`}>
             <h2>GRIDDED ION <span class="break-mobile"></span>THRUSTERS</h2>
           </div>
         </button>
@@ -314,7 +352,7 @@ const description = 'An archive of electric propulsion hot-fire videos and on-or
       <!-- MAGNETIC NOZZLE THRUSTERS -->
       <div class="accordion">
         <button class="accordion-toggle" aria-expanded="false">
-          <div class="section-hero" style="background-image:url('/assets/images/xjet.png')">
+          <div class="section-hero" style={`background-image: url(${xjetSection.src})`}>
             <h2>MAGNETIC NOZZLE <span class="break-mobile"></span>THRUSTERS</h2>
           </div>
         </button>
@@ -395,7 +433,7 @@ const description = 'An archive of electric propulsion hot-fire videos and on-or
       <!-- OTHER THRUSTERS -->
       <div class="accordion">
         <button class="accordion-toggle" aria-expanded="false">
-          <div class="section-hero" style="background-image:url('/assets/images/acft.png')">
+          <div class="section-hero" style={`background-image: url(${acftSection.src})`}>
             <h2>OTHER <span class="break-mobile"></span>THRUSTERS</h2>
           </div>
         </button>

@@ -1,15 +1,25 @@
 ---
+import { Image } from 'astro:assets'
+import logo from '../assets/images/logo_image.gif'
 ---
+
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="Oliver Hitchens">
-      <img src="/assets/images/logo_image.gif" alt="Oliver Hitchens logo" class="logo" />
-      <span class="name" aria-hidden="true">liver Hitchens</span>
+      <Image
+        src={logo}
+        alt="Oliver Hitchens logo"
+        class="logo"
+        width={60}
+      />
+      <span class="name" aria-hidden="true">Oliver Hitchens</span>
     </a>
+
     <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav">
       <span class="sr-only">Toggle navigation</span>
       <span class="nav-icon"><span></span><span></span><span></span></span>
     </button>
+
     <nav id="main-nav" class="main-nav" aria-label="Main navigation">
       <a href="/">Engineering</a>
       <a href="/research">Research</a>

@@ -1,5 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
+import { Image } from 'astro:assets'
+
+import chamberPortrait from '../assets/images/chamber_portrait.jpg'
+import gaussGif from '../assets/images/GAUSS.gif'
+import plasmaTorus from '../assets/images/plasma_toroid.gif'
+import smallEcr from '../assets/images/small_ecr.jpg'
+import ecrInfographic from '../assets/images/ecr_infographic.jpg'
+import rfaHotfire from '../assets/images/rfa_hotfire.gif'
+import aquajet from '../assets/images/xjet.gif'
+
 const title = 'Engineering — Oliver Hitchens'
 const description = 'Engineering projects and test facilities — Oliver Hitchens.'
 ---
@@ -21,7 +31,7 @@ const description = 'Engineering projects and test facilities — Oliver Hitchen
       </div>
 
       <figure class="hero-image">
-        <img src="/assets/images/chamber_portrait.jpg" alt="Test chamber portrait" />
+        <Image src={chamberPortrait} alt="Test chamber portrait" width={900} />
       </figure>
     </section>
 
@@ -30,7 +40,7 @@ const description = 'Engineering projects and test facilities — Oliver Hitchen
       <h2>GAUSS (Rocket Lab)</h2>
       <p>Key member of the team developing Rocket Lab's GAUSS thruster, a magnetically shielded hall effect thruster with a coaxial heaterless hollow cathode. <a href="https://rocketlabcorp.com/space-systems/gauss-propulsion/">More info</a></p>
       <figure>
-        <img src="/assets/images/GAUSS.gif" alt="GAUSS ignition" />
+        <Image src={gaussGif} alt="GAUSS ignition" width={900} />
         <figcaption>Video of GAUSS ignition on a 2 axis slider.</figcaption>
       </figure>
       <div class="video-entry">
@@ -68,7 +78,7 @@ const description = 'Engineering projects and test facilities — Oliver Hitchen
       <h2>Plasma Toroid (Personal Project)</h2>
       <p>Constructed a 15 MHz oscillator to drive an inductively coupled plasma inside of a globe of 15 torr xenon gas.</p>
       <figure>
-        <img src="/assets/images/plasma_toroid.gif" alt="Plasma toroid" />
+        <Image src={plasmaTorus} alt="Plasma toroid" width={700} />
         <figcaption>Plasma toroid testing, Mar 2023.</figcaption>
       </figure>
     </section>
@@ -79,11 +89,11 @@ const description = 'Engineering projects and test facilities — Oliver Hitchen
       <p class="extra-space">Investigated effects of magnetic field strength gradient on electron power absorption. <a href="https://openresearch.surrey.ac.uk/esploro/outputs/99991466502346">Paper</a></p>
       <div class="side-by-side">
         <figure>
-          <img src="/assets/images/small_ecr.jpg" alt="Small ECR test" />
+          <Image src={smallEcr} alt="Small ECR test" width={600} />
           <figcaption>Test fire of the small Electron Cyclotron Resonance (ECR) thruster.</figcaption>
         </figure>
         <figure>
-          <img src="/assets/images/ecr_infographic.jpg" alt="ECR infographic" />
+          <Image src={ecrInfographic} alt="ECR infographic" width={600} />
         </figure>
       </div>
     </section>
@@ -93,7 +103,7 @@ const description = 'Engineering projects and test facilities — Oliver Hitchen
       <h2>Rocket Engine Test Rig (Internship)</h2>
       <p class="extra-space">Developed and operated the test rig for Rocket Factory Augsburg’s liquid NM-N2O cryogenic pressure-fed kick stage rocket engine.</p>
       <figure>
-        <img src="/assets/images/rfa_hotfire.gif" alt="RFA hotfire" />
+        <Image src={rfaHotfire} alt="RFA hotfire" width={900} />
         <figcaption>Hot fire of RFA's kick stage engine.</figcaption>
       </figure>
     </section>
@@ -103,7 +113,7 @@ const description = 'Engineering projects and test facilities — Oliver Hitchen
       <h2>AQUAJET (PhD Project)</h2>
       <p class="extra-space">Worked with AVS-UK Ltd. as a test engineer on the AQUAJET thruster, an electric plasma thruster that can run on water. <a href="https://www.researchgate.net/publication/350688685">Paper</a></p>
       <figure>
-        <img src="/assets/images/xjet.gif" alt="AQUAJET ignition" />
+        <Image src={aquajet} alt="AQUAJET ignition" width={900} />
         <figcaption>Ignition of the AQUAJET Thruster, Feb 2021.</figcaption>
       </figure>
     </section>
