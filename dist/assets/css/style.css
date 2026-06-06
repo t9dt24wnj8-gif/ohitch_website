@@ -170,6 +170,7 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 @media(max-width:720px){
 	.nav-toggle{display:inline-flex;margin-left:auto}
 	.main-nav{
+		
 		display:flex;
 		flex-direction:column;
 
@@ -185,6 +186,9 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 		background:transparent;
 
 		transition:max-height .32s cubic-bezier(0.22,0.0,0.2,1), opacity .22s ease;
+	}
+	.header-inner{
+		position:relative;
 	}
 	.main-nav.open{
 		max-height:500px;
@@ -298,10 +302,6 @@ figcaption{display:block;text-align:center;color:var(--muted);font-size:0.9rem;m
 
 	/* Extra spacing utility for specific paragraphs on the homepage */
 	.page-content .extra-space{margin-bottom:3rem}
-
-	.site-header.open{
-    max-height:500px; /* adjust if menu grows */
-	}
 
 }
 
