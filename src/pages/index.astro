@@ -3,12 +3,14 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import { Image } from 'astro:assets'
 
 import chamberPortrait from '../assets/images/chamber_portrait.jpg'
-import gaussGif from '../assets/images/GAUSS.gif'
 import plasmaTorus from '../assets/images/plasma_toroid.gif'
 import smallEcr from '../assets/images/small_ecr.jpg'
 import ecrInfographic from '../assets/images/ecr_infographic.jpg'
 import rfaHotfire from '../assets/images/rfa_hotfire.gif'
 import aquajet from '../assets/images/xjet.gif'
+
+import gaussVideoMobile from '../assets/videos/GAUSS_mobile.mp4'
+import gaussVideoDesktop from '../assets/videos/GAUSS_desktop.mp4'
 
 const title = 'Engineering — Oliver Hitchens'
 const description = 'Engineering projects and test facilities — Oliver Hitchens.'
@@ -40,7 +42,18 @@ const description = 'Engineering projects and test facilities — Oliver Hitchen
       <h2>GAUSS (Rocket Lab)</h2>
       <p>Key member of the team developing Rocket Lab's GAUSS thruster, a magnetically shielded hall effect thruster with a coaxial heaterless hollow cathode. <a href="https://rocketlabcorp.com/space-systems/gauss-propulsion/">More info</a></p>
       <figure>
-        <Image src={gaussGif} alt="GAUSS ignition" width={900} />
+        <video
+          id="gauss-index"
+          data-mobile-src={gaussVideoMobile}
+          data-desktop-src={gaussVideoDesktop}
+          autoplay
+          muted
+          playsinline
+          loop
+          preload="metadata"
+        >
+          <source id="gauss-index-source" src={gaussVideoDesktop} type="video/mp4" />
+        </video>
         <figcaption>Video of GAUSS ignition on a 2 axis slider.</figcaption>
       </figure>
       <div class="video-entry">
@@ -119,4 +132,25 @@ const description = 'Engineering projects and test facilities — Oliver Hitchen
     </section>
 
   </main>
+
+  <script type="module">
+    const video = document.getElementById('gauss-index');
+    const source = document.getElementById('gauss-index-source');
+
+    const mobileSrc = video.dataset.mobileSrc;
+    const desktopSrc = video.dataset.desktopSrc;
+
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+    source.src = isMobile ? mobileSrc : desktopSrc;
+
+    video.load();
+
+    const play = () => video.play().catch(() => {});
+    play();
+
+    document.addEventListener('pointerdown', play, { once: true });
+    document.addEventListener('keydown', play, { once: true });
+  </script>
+
 </BaseLayout>

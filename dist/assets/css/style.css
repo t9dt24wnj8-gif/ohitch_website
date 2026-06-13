@@ -66,6 +66,7 @@ figure img{max-width:100%;height:auto;border-radius:0;}
 /* Page content images smaller and centered */
 .page-content figure{display:block;text-align:center;margin:0.8rem auto}
 .page-content img{max-width:680px;width:100%;height:auto;margin:0 auto;display:block;border-radius:0}
+.page-content video { max-width: 680px; width: 100%; height: auto; margin: 0 auto; display: block; }
 .page-content article section {margin-bottom: 3.5rem !important;}
 /* Utility: extra bottom spacing for paragraphs that need to push following media down */
 .page-content .extra-space{margin-bottom:3rem}
