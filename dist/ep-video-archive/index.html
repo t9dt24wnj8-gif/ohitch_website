@@ -11,6 +11,10 @@
 
       video.load();
 
+      video.addEventListener('loadedmetadata', () => {
+        video.currentTime = 2;
+      }, { once: true });
+
       const play = () => video.play().catch(() => {});
       play();
 
