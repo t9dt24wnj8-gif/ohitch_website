@@ -19,6 +19,8 @@ const description = 'An archive of electric propulsion hot-fire videos and on-or
   <div class="full-bleed-hero compact-hero gauss-hero">
     <video
       id="gauss-boomerang"
+      data-mobile-src={gaussVideoMobile}
+      data-desktop-src={gaussVideoDesktop}
       autoplay
       muted
       playsinline
@@ -32,8 +34,8 @@ const description = 'An archive of electric propulsion hot-fire videos and on-or
       const video = document.getElementById('gauss-boomerang');
       const source = document.getElementById('gauss-source');
 
-      const mobileSrc = ${gaussVideoMobile};
-      const desktopSrc = ${gaussVideoDesktop};
+      const mobileSrc = video.dataset.mobileSrc;
+      const desktopSrc = video.dataset.desktopSrc;
 
       const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
