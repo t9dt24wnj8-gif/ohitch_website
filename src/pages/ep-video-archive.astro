@@ -43,10 +43,6 @@ const description = 'An archive of electric propulsion hot-fire videos and on-or
 
       video.load();
 
-      video.addEventListener('loadedmetadata', () => {
-        video.currentTime = 7;
-      }, { once: true });
-
       const play = () => video.play().catch(() => {});
       play();
 
