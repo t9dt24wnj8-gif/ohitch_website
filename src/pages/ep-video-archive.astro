@@ -49,6 +49,7 @@ const description = 'An archive of electric propulsion hot-fire videos and on-or
       // Fallback: retry on first user interaction for browsers/profiles that block muted autoplay
       document.addEventListener('pointerdown', play, { once: true });
       document.addEventListener('scroll', play, { once: true });
+      document.addEventListener('keydown', play, { once: true });
     </script>
 
     <h1 style="color:#fff;font-size:clamp(2.4rem,5vw,4.2rem);margin:0;text-align:center;text-shadow:0 8px 30px rgba(0,0,0,0.6)">
